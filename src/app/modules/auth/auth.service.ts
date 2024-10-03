@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../errors/AppError';
+import { sendMail } from '../../utils/sendMail';
 import { USER_STATUS } from '../user/user.constant';
 import { ILoginCredentials, IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
@@ -66,15 +67,15 @@ const login = async (payload: ILoginCredentials) => {
     // create access token
     const accessToken = createToken(
         jwtPayload,
-        config.jwt_access_secret as string,
-        config.jwt_access_exp_in as string,
+        config.jwt_access_secret!,
+        config.jwt_access_exp_in!,
     );
 
     // create refresh token
     const refreshToken = createToken(
         jwtPayload,
-        config.jwt_refresh_secret as string,
-        config.jwt_refresh_exp_in as string,
+        config.jwt_refresh_secret!,
+        config.jwt_refresh_exp_in!,
     );
 
     user.password = undefined; // remove password field
@@ -118,8 +119,8 @@ const refreshToken = async (token: string) => {
     // create access token
     const accessToken = createToken(
         jwtPayload,
-        config.jwt_access_secret as string,
-        config.jwt_access_exp_in as string,
+        config.jwt_access_secret!,
+        config.jwt_access_exp_in!,
     );
 
     return {
@@ -171,9 +172,112 @@ const changePassword = async (
     };
 };
 
+const forgetPassword = async (email: string) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (user?.isDeleted) {
+        throw new AppError(httpStatus.FORBIDDEN, 'User not found!');
+    }
+
+    if (user?.status === USER_STATUS.BLOCKED) {
+        throw new AppError(httpStatus.FORBIDDEN, 'The user is blocked!');
+    }
+
+    const jwtPayload = {
+        id: user._id,
+        role: user.role,
+    };
+
+    // create reset token
+    const resetToken = createToken(
+        jwtPayload,
+        config.jwt_reset_secret!,
+        config.jwt_reset_exp_in!,
+    );
+
+    const resetUILink = `${config.client_base_url}?token=${resetToken} `;
+
+    const result = await sendMail({
+        from: config.mail_auth_user!,
+        to: email,
+        subject: `Password Reset Link`,
+        html: resetUILink,
+    });
+
+    if (!result.messageId) {
+        throw new AppError(
+            httpStatus.SERVICE_UNAVAILABLE,
+            'Fail to send email!',
+        );
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Rest link sent successfully. Check your mail.',
+        data: null,
+    };
+};
+
+const resetPassword = async (password: string, token?: string) => {
+    if (!token) {
+        throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+    }
+
+    const decodedUser = jwt.verify(
+        token,
+        config.jwt_reset_secret!,
+    ) as JwtPayload;
+
+    const user = await User.findById(decodedUser.id);
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (user?.isDeleted) {
+        throw new AppError(httpStatus.FORBIDDEN, 'User not found!');
+    }
+
+    if (user?.status === USER_STATUS.BLOCKED) {
+        throw new AppError(httpStatus.FORBIDDEN, 'The user is blocked!');
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        password,
+        Number(config.bcrypt_salt_rounds),
+    );
+
+    const updatedUser = await User.findByIdAndUpdate(
+        decodedUser.id,
+        {
+            password: hashedPassword,
+        },
+        { new: true },
+    );
+
+    if (!updatedUser) {
+        throw new AppError(
+            httpStatus.INTERNAL_SERVER_ERROR,
+            'Failed to reset password!',
+        );
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Password reset successfully!',
+        data: updatedUser,
+    };
+};
+
 export const AuthServices = {
     signup,
     login,
     refreshToken,
     changePassword,
+    forgetPassword,
+    resetPassword,
 };

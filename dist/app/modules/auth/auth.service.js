@@ -18,6 +18,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
+const sendMail_1 = require("../../utils/sendMail");
 const user_constant_1 = require("../user/user.constant");
 const user_model_1 = require("../user/user.model");
 const auth_util_1 = require("./auth.util");
@@ -117,9 +118,72 @@ const changePassword = (decodedUser, payload) => __awaiter(void 0, void 0, void 
         data: null,
     };
 });
+const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    if (user === null || user === void 0 ? void 0 : user.isDeleted) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User not found!');
+    }
+    if ((user === null || user === void 0 ? void 0 : user.status) === user_constant_1.USER_STATUS.BLOCKED) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'The user is blocked!');
+    }
+    const jwtPayload = {
+        id: user._id,
+        role: user.role,
+    };
+    // create reset token
+    const resetToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_reset_secret, config_1.default.jwt_reset_exp_in);
+    const resetUILink = `${config_1.default.client_base_url}?token=${resetToken} `;
+    const result = yield (0, sendMail_1.sendMail)({
+        from: config_1.default.mail_auth_user,
+        to: email,
+        subject: `Password Reset Link`,
+        html: resetUILink,
+    });
+    if (!result.messageId) {
+        throw new AppError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, 'Fail to send email!');
+    }
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Rest link sent successfully. Check your mail.',
+        data: null,
+    };
+});
+const resetPassword = (password, token) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!token) {
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
+    }
+    const decodedUser = jsonwebtoken_1.default.verify(token, config_1.default.jwt_reset_secret);
+    const user = yield user_model_1.User.findById(decodedUser.id);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    if (user === null || user === void 0 ? void 0 : user.isDeleted) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User not found!');
+    }
+    if ((user === null || user === void 0 ? void 0 : user.status) === user_constant_1.USER_STATUS.BLOCKED) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'The user is blocked!');
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(password, Number(config_1.default.bcrypt_salt_rounds));
+    const updatedUser = yield user_model_1.User.findByIdAndUpdate(decodedUser.id, {
+        password: hashedPassword,
+    }, { new: true });
+    if (!updatedUser) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to reset password!');
+    }
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Password reset successfully!',
+        data: updatedUser,
+    };
+});
 exports.AuthServices = {
     signup,
     login,
     refreshToken,
     changePassword,
+    forgetPassword,
+    resetPassword,
 };

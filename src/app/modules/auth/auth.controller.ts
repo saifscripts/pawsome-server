@@ -34,9 +34,25 @@ const changePassword = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/auth/forget-password (POST)
+const forgetPassword = catchAsync(async (req, res) => {
+    const result = await AuthServices.forgetPassword(req.body.email);
+    sendResponse(res, result);
+});
+
+// Route: /api/v1/auth/reset-password (PUT)
+const resetPassword = catchAsync(async (req, res) => {
+    const password = req.body.password;
+    const token = req.headers?.authorization?.split?.(' ')[1];
+    const result = await AuthServices.resetPassword(password, token);
+    sendResponse(res, result);
+});
+
 export const AuthControllers = {
     signup,
     login,
     refreshToken,
     changePassword,
+    forgetPassword,
+    resetPassword,
 };

@@ -52,9 +52,29 @@ const changePasswordValidationSchema = zod_1.z.object({
             .min(6, 'Password must be at least 6 characters long'),
     }),
 });
+const forgetPasswordValidationSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z
+            .string({
+            required_error: 'Email is required',
+        })
+            .email('Invalid email address'),
+    }),
+});
+const resetPasswordValidationSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        password: zod_1.z
+            .string({
+            required_error: 'Password is required',
+        })
+            .min(6, 'Password must be at least 6 characters long'),
+    }),
+});
 exports.AuthValidations = {
     signupValidationSchema,
     loginValidationSchema,
     refreshTokenValidationSchema,
     changePasswordValidationSchema,
+    forgetPasswordValidationSchema,
+    resetPasswordValidationSchema,
 };
