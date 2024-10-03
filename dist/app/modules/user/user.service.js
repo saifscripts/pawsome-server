@@ -39,6 +39,17 @@ const getUsersFromDB = (query) => __awaiter(void 0, void 0, void 0, function* ()
         meta,
     };
 });
+const getUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(id);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'User retrieved successfully',
+        data: Object.assign(Object.assign({}, user.toObject()), { role: undefined, status: undefined, userType: undefined, createdAt: undefined, updatedAt: undefined }),
+    };
+});
 const deleteUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(id);
     if (!user) {
@@ -272,6 +283,7 @@ const updateAvatar = (id, image) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.UserServices = {
     getUsersFromDB,
+    getUserFromDB,
     deleteUserFromDB,
     makeAdminIntoDB,
     removeAdminFromDB,

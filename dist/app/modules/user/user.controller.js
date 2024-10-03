@@ -21,6 +21,11 @@ const getUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
     const result = yield user_service_1.UserServices.getUsersFromDB(req.query);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/v1/users/:id (GET)
+const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserServices.getUserFromDB(req.params.id);
+    (0, sendResponse_1.default)(res, result);
+}));
 // Route: /api/v1/users/:id (DELETE)
 const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.UserServices.deleteUserFromDB(req.params.id);
@@ -79,6 +84,7 @@ const contactUs = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
 }));
 exports.UserControllers = {
     getUsers,
+    getUser,
     deleteUser,
     makeAdmin,
     removeAdmin,

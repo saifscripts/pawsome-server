@@ -13,7 +13,10 @@ const user_controller_1 = require("./user.controller");
 const user_validation_1 = require("./user.validation");
 const router = express_1.default.Router();
 router.route('/').get((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.getUsers);
-router.route('/:id').delete((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.deleteUser);
+router
+    .route('/:id')
+    .get(user_controller_1.UserControllers.getUser)
+    .delete((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.deleteUser);
 router
     .route('/:id/make-admin')
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.makeAdmin);

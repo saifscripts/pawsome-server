@@ -8,6 +8,12 @@ const getUsers = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/users/:id (GET)
+const getUser = catchAsync(async (req, res) => {
+    const result = await UserServices.getUserFromDB(req.params.id);
+    sendResponse(res, result);
+});
+
 // Route: /api/v1/users/:id (DELETE)
 const deleteUser = catchAsync(async (req, res) => {
     const result = await UserServices.deleteUserFromDB(req.params.id);
@@ -83,6 +89,7 @@ const contactUs = catchAsync(async (req, res) => {
 
 export const UserControllers = {
     getUsers,
+    getUser,
     deleteUser,
     makeAdmin,
     removeAdmin,

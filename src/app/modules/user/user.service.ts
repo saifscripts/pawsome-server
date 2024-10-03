@@ -29,6 +29,27 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
     };
 };
 
+const getUserFromDB = async (id: string) => {
+    const user = await User.findById(id);
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'User retrieved successfully',
+        data: {
+            ...user.toObject(),
+            role: undefined,
+            status: undefined,
+            userType: undefined,
+            createdAt: undefined,
+            updatedAt: undefined,
+        },
+    };
+};
+
 const deleteUserFromDB = async (id: string) => {
     const user = await User.findById(id);
 
@@ -406,6 +427,7 @@ const updateAvatar = async (id: string, image: { buffer: Buffer }) => {
 
 export const UserServices = {
     getUsersFromDB,
+    getUserFromDB,
     deleteUserFromDB,
     makeAdminIntoDB,
     removeAdminFromDB,
