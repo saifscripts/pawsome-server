@@ -21,6 +21,12 @@ router
     .route('/:id/remove-admin')
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.removeAdmin);
 router
+    .route('/:id/block')
+    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.blockUser);
+router
+    .route('/:id/unblock')
+    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.unblockUser);
+router
     .route('/me')
     .get((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), user_controller_1.UserControllers.getProfile)
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), (0, validateRequest_1.default)(user_validation_1.UserValidations.updateProfileValidationSchema), user_controller_1.UserControllers.updateProfile);

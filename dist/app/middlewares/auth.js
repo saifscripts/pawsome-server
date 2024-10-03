@@ -35,8 +35,8 @@ const auth = (...authorizedRoles) => {
         // decode the token
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
         const { id } = decoded;
-        // check if user exists from the decoded user id
         const user = yield user_model_1.User.findById(id);
+        // check if user exists
         if (!user) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
         }

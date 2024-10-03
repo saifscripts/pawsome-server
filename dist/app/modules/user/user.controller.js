@@ -36,6 +36,16 @@ const removeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     const result = yield user_service_1.UserServices.removeAdminFromDB(req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/v1/users/:id/block (PUT)
+const blockUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserServices.blockUserIntoDB(req.params.id);
+    (0, sendResponse_1.default)(res, result);
+}));
+// Route: /api/users/:id/unblock (PUT)
+const unblockUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserServices.unblockUserIntoDB(req.params.id);
+    (0, sendResponse_1.default)(res, result);
+}));
 // Route: /api/v1/users/me (GET)
 const getProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
@@ -63,6 +73,8 @@ exports.UserControllers = {
     deleteUser,
     makeAdmin,
     removeAdmin,
+    blockUser,
+    unblockUser,
     getProfile,
     updateProfile,
     contactUs,
