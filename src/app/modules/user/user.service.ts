@@ -1,0 +1,187 @@
+import httpStatus from 'http-status';
+import QueryBuilder from '../../builders/QueryBuilder';
+import config from '../../config';
+import AppError from '../../errors/AppError';
+import { sendMail } from '../../utils/sendMail';
+import uploadImage from '../../utils/uploadImage';
+import { replaceText } from '../payment/payment.utils';
+import { CONTACT_FORM_MESSAGE, USER_ROLE } from './user.constant';
+import { IContactUsOptions, IUser } from './user.interface';
+import { User } from './user.model';
+
+const getUsersFromDB = async (query: Record<string, unknown>) => {
+    const userQuery = new QueryBuilder(User.find(), query)
+        // .search(UserSearchableFields)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+    const users = await userQuery.modelQuery;
+    const meta = await userQuery.countTotal();
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Users retrieved successfully',
+        data: users,
+        meta,
+    };
+};
+
+const deleteUserFromDB = async (id: string) => {
+    const user = await User.findById(id);
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    // TODO:check other conditions for not deleting
+
+    // delete the user
+    const deletedUser = await User.findByIdAndUpdate(
+        id,
+        { isDeleted: true },
+        { new: true },
+    );
+
+    if (!deletedUser) {
+        throw new AppError(
+            httpStatus.INTERNAL_SERVER_ERROR,
+            'Failed to delete user!',
+        );
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'User deleted successfully',
+        data: deletedUser,
+    };
+};
+
+const makeAdminIntoDB = async (id: string) => {
+    const user = await User.findById(id);
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (user.role === USER_ROLE.ADMIN) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'User is already an admin!');
+    }
+
+    const result = await User.findByIdAndUpdate(id, { role: USER_ROLE.ADMIN });
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'User role updated successfully!',
+        data: result,
+    };
+};
+
+const removeAdminFromDB = async (id: string) => {
+    const user = await User.findById(id);
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (user.role !== USER_ROLE.ADMIN) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'User is not an admin!');
+    }
+
+    const result = await User.findByIdAndUpdate(id, { role: USER_ROLE.USER });
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'User role updated successfully!',
+        data: result,
+    };
+};
+
+const getProfileFromDB = async (id: string) => {
+    const user = await User.findById(id);
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'User profile retrieved successfully',
+        data: user,
+    };
+};
+
+const updateProfileIntoDB = async (id: string, payload: Partial<IUser>) => {
+    const updatedUser = await User.findByIdAndUpdate(id, payload, {
+        new: true,
+    });
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Profile updated successfully',
+        data: updatedUser,
+    };
+};
+
+const contactUsViaMail = async (payload: IContactUsOptions) => {
+    const emailBody = replaceText(CONTACT_FORM_MESSAGE, {
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        message: payload.message,
+    });
+
+    const result = await sendMail({
+        from: payload.email,
+        to: config.mail_auth_user!,
+        subject: `Contact Us Form Submission from ${payload.name}`,
+        html: emailBody,
+    });
+
+    if (!result.messageId) {
+        throw new AppError(
+            httpStatus.SERVICE_UNAVAILABLE,
+            'Fail to send email!',
+        );
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Email sent successfully',
+        data: null,
+    };
+};
+
+const updateAvatar = async (id: string, image: { buffer: Buffer }) => {
+    if (!image) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Avatar is required');
+    }
+
+    const avatarURL = await uploadImage(image.buffer, id, 'avatar');
+
+    const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { avatarURL },
+        {
+            new: true,
+        },
+    );
+
+    if (!updatedUser) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Avatar uploaded successfully',
+        data: updatedUser,
+    };
+};
+
+export const UserServices = {
+    getUsersFromDB,
+    deleteUserFromDB,
+    makeAdminIntoDB,
+    removeAdminFromDB,
+    getProfileFromDB,
+    updateProfileIntoDB,
+    contactUsViaMail,
+    updateAvatar,
+};
