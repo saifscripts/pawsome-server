@@ -8,7 +8,8 @@
         "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
         "ts.check": "tsc --project tsconfig.json",
         "build": "rimraf dist && tsc",
-        "add-build": "git commit -am build",
+        "add-build": "git add dist",
+        "commit-build": "git commit -m 'build'",
         "lint": "npx eslint src --ignore-pattern .ts",
         "lint:fix": "npx eslint src --fix",
         "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
@@ -17,7 +18,8 @@
     "pre-push": [
         "ts.check",
         "build",
-        "add-build"
+        "add-build",
+        "commit-build"
     ],
     "license": "MIT",
     "dependencies": {
