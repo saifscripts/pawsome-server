@@ -39,9 +39,9 @@ const auth = (...authorizedRoles: IUserRole[]): RequestHandler => {
 
         const { id } = decoded;
 
-        // check if user exists from the decoded user id
         const user = await User.findById(id);
 
+        // check if user exists
         if (!user) {
             throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
         }

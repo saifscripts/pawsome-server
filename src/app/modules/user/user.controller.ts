@@ -26,6 +26,18 @@ const removeAdmin = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/users/:id/block (PUT)
+const blockUser = catchAsync(async (req, res) => {
+    const result = await UserServices.blockUserIntoDB(req.params.id);
+    sendResponse(res, result);
+});
+
+// Route: /api/users/:id/unblock (PUT)
+const unblockUser = catchAsync(async (req, res) => {
+    const result = await UserServices.unblockUserIntoDB(req.params.id);
+    sendResponse(res, result);
+});
+
 // Route: /api/v1/users/me (GET)
 const getProfile = catchAsync(async (req, res) => {
     const { id } = req.user;
@@ -57,6 +69,8 @@ export const UserControllers = {
     deleteUser,
     makeAdmin,
     removeAdmin,
+    blockUser,
+    unblockUser,
     getProfile,
     updateProfile,
     contactUs,

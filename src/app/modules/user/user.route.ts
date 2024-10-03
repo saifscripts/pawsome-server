@@ -20,6 +20,14 @@ router
     .put(auth(USER_ROLE.ADMIN), UserControllers.removeAdmin);
 
 router
+    .route('/:id/block')
+    .put(auth(USER_ROLE.ADMIN), UserControllers.blockUser);
+
+router
+    .route('/:id/unblock')
+    .put(auth(USER_ROLE.ADMIN), UserControllers.unblockUser);
+
+router
     .route('/me')
     .get(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.getProfile)
     .put(
