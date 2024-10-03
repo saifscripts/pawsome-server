@@ -63,8 +63,8 @@ const unfollowUser = catchAsync(async (req, res) => {
 });
 
 // Route: /api/v1/users/me (GET)
-const getProfile = catchAsync(async (req, res) => {
-    const result = await UserServices.getProfileFromDB(req.user.id);
+const getMe = catchAsync(async (req, res) => {
+    const result = await UserServices.getMeFromDB(req.user.id);
     sendResponse(res, result);
 });
 
@@ -97,7 +97,7 @@ export const UserControllers = {
     unblockUser,
     followUser,
     unfollowUser,
-    getProfile,
+    getMe,
     updateProfile,
     contactUs,
     updateAvatar,

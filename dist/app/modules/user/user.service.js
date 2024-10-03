@@ -224,7 +224,7 @@ const unfollowUserFromDB = (userId, followingId) => __awaiter(void 0, void 0, vo
         throw error;
     }
 });
-const getProfileFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getMeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(id);
     return {
         statusCode: http_status_1.default.OK,
@@ -291,7 +291,7 @@ exports.UserServices = {
     unblockUserIntoDB,
     followUserIntoDB,
     unfollowUserFromDB,
-    getProfileFromDB,
+    getMeFromDB,
     updateProfileIntoDB,
     contactUsViaMail,
     updateAvatar,

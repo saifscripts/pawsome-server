@@ -348,7 +348,7 @@ const unfollowUserFromDB = async (userId: string, followingId: string) => {
     }
 };
 
-const getProfileFromDB = async (id: string) => {
+const getMeFromDB = async (id: string) => {
     const user = await User.findById(id);
 
     return {
@@ -435,7 +435,7 @@ export const UserServices = {
     unblockUserIntoDB,
     followUserIntoDB,
     unfollowUserFromDB,
-    getProfileFromDB,
+    getMeFromDB,
     updateProfileIntoDB,
     contactUsViaMail,
     updateAvatar,
