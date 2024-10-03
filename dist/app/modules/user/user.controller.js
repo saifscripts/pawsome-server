@@ -51,6 +51,11 @@ const followUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     const result = yield user_service_1.UserServices.followUserIntoDB(req.user.id, req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/users/:id/unfollow (PUT)
+const unfollowUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserServices.unfollowUserFromDB(req.user.id, req.params.id);
+    (0, sendResponse_1.default)(res, result);
+}));
 // Route: /api/v1/users/me (GET)
 const getProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.UserServices.getProfileFromDB(req.user.id);
@@ -80,6 +85,7 @@ exports.UserControllers = {
     blockUser,
     unblockUser,
     followUser,
+    unfollowUser,
     getProfile,
     updateProfile,
     contactUs,

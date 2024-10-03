@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import config from '../../config';
 import AppError from '../../errors/AppError';
@@ -180,6 +181,152 @@ const unblockUserIntoDB = async (id: string) => {
     };
 };
 
+const followUserIntoDB = async (userId: string, followingId: string) => {
+    if (userId === followingId) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "You can't follow yourself!",
+        );
+    }
+
+    const followingUser = await User.findById(followingId);
+
+    if (!followingUser) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (followingUser.isDeleted) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
+    if (followingUser.status === USER_STATUS.BLOCKED) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked!');
+    }
+
+    if (
+        followingUser?.followers.includes(new mongoose.Types.ObjectId(userId))
+    ) {
+        throw new AppError(
+            httpStatus.CONFLICT,
+            'You already followed the user!',
+        );
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { following: followingId } },
+            { new: true, session },
+        );
+
+        if (!updatedUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to follow the user!',
+            );
+        }
+
+        const updatedFollowingUser = await User.findByIdAndUpdate(
+            followingId,
+            { $addToSet: { followers: userId } },
+            { new: true, session },
+        );
+
+        if (!updatedFollowingUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to follow the user!',
+            );
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.OK,
+            message: 'User is followed successfully!',
+            data: updatedUser,
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
+    }
+};
+
+const unfollowUserFromDB = async (userId: string, followingId: string) => {
+    if (userId === followingId) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "You can't follow/unfollow yourself!",
+        );
+    }
+
+    const followingUser = await User.findById(followingId);
+
+    if (
+        !followingUser?.followers?.includes?.(
+            new mongoose.Types.ObjectId(userId),
+        )
+    ) {
+        throw new AppError(
+            httpStatus.CONFLICT,
+            "You didn't followed the user!",
+        );
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { following: followingId } },
+            { new: true, session },
+        );
+
+        if (!updatedUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to unfollow the user!',
+            );
+        }
+
+        const updatedFollowingUser = await User.findByIdAndUpdate(
+            followingId,
+            { $pull: { followers: userId } },
+            { new: true, session },
+        );
+
+        if (!updatedFollowingUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to unfollow the user!',
+            );
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.OK,
+            message: 'User is unfollowed successfully!',
+            data: updatedUser,
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
+    }
+};
+
 const getProfileFromDB = async (id: string) => {
     const user = await User.findById(id);
 
@@ -264,6 +411,8 @@ export const UserServices = {
     removeAdminFromDB,
     blockUserIntoDB,
     unblockUserIntoDB,
+    followUserIntoDB,
+    unfollowUserFromDB,
     getProfileFromDB,
     updateProfileIntoDB,
     contactUsViaMail,

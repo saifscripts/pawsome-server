@@ -38,10 +38,27 @@ const unblockUser = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/users/:id/follow (PUT)
+const followUser = catchAsync(async (req, res) => {
+    const result = await UserServices.followUserIntoDB(
+        req.user.id,
+        req.params.id,
+    );
+    sendResponse(res, result);
+});
+
+// Route: /api/users/:id/unfollow (PUT)
+const unfollowUser = catchAsync(async (req, res) => {
+    const result = await UserServices.unfollowUserFromDB(
+        req.user.id,
+        req.params.id,
+    );
+    sendResponse(res, result);
+});
+
 // Route: /api/v1/users/me (GET)
 const getProfile = catchAsync(async (req, res) => {
-    const { id } = req.user;
-    const result = await UserServices.getProfileFromDB(id);
+    const result = await UserServices.getProfileFromDB(req.user.id);
     sendResponse(res, result);
 });
 
@@ -71,6 +88,8 @@ export const UserControllers = {
     removeAdmin,
     blockUser,
     unblockUser,
+    followUser,
+    unfollowUser,
     getProfile,
     updateProfile,
     contactUs,

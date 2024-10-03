@@ -28,6 +28,14 @@ router
     .put(auth(USER_ROLE.ADMIN), UserControllers.unblockUser);
 
 router
+    .route('/:id/follow')
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.followUser);
+
+router
+    .route('/:id/unfollow')
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.unfollowUser);
+
+router
     .route('/me')
     .get(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.getProfile)
     .put(

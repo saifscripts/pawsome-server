@@ -136,6 +136,9 @@ const unblockUserIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* ()
     };
 });
 const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (userId === followingId) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You can't follow yourself!");
+    }
     const followingUser = yield user_model_1.User.findById(followingId);
     if (!followingUser) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
@@ -146,19 +149,62 @@ const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void
     if (followingUser.status === user_constant_1.USER_STATUS.BLOCKED) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
     }
+    if (followingUser === null || followingUser === void 0 ? void 0 : followingUser.followers.includes(new mongoose_1.default.Types.ObjectId(userId))) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, 'You already followed the user!');
+    }
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
-        // write operations
-        const result = yield user_model_1.User.findByIdAndUpdate(userId, { $push: { following: followingId } }, { new: true, session });
-        yield user_model_1.User.findByIdAndUpdate(followingId, { $push: { follower: userId } }, { new: true, session });
+        const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, { $addToSet: { following: followingId } }, { new: true, session });
+        if (!updatedUser) {
+            throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to follow the user!');
+        }
+        const updatedFollowingUser = yield user_model_1.User.findByIdAndUpdate(followingId, { $addToSet: { followers: userId } }, { new: true, session });
+        if (!updatedFollowingUser) {
+            throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to follow the user!');
+        }
         // commit transaction and end session
         yield session.commitTransaction();
         yield session.endSession();
         return {
             statusCode: http_status_1.default.OK,
             message: 'User is followed successfully!',
-            data: result,
+            data: updatedUser,
+        };
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw error;
+    }
+});
+const unfollowUserFromDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    if (userId === followingId) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You can't follow/unfollow yourself!");
+    }
+    const followingUser = yield user_model_1.User.findById(followingId);
+    if (!((_b = (_a = followingUser === null || followingUser === void 0 ? void 0 : followingUser.followers) === null || _a === void 0 ? void 0 : _a.includes) === null || _b === void 0 ? void 0 : _b.call(_a, new mongoose_1.default.Types.ObjectId(userId)))) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, "You didn't followed the user!");
+    }
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        const updatedUser = yield user_model_1.User.findByIdAndUpdate(userId, { $pull: { following: followingId } }, { new: true, session });
+        if (!updatedUser) {
+            throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to unfollow the user!');
+        }
+        const updatedFollowingUser = yield user_model_1.User.findByIdAndUpdate(followingId, { $pull: { followers: userId } }, { new: true, session });
+        if (!updatedFollowingUser) {
+            throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to unfollow the user!');
+        }
+        // commit transaction and end session
+        yield session.commitTransaction();
+        yield session.endSession();
+        return {
+            statusCode: http_status_1.default.OK,
+            message: 'User is unfollowed successfully!',
+            data: updatedUser,
         };
     }
     catch (error) {
@@ -232,6 +278,7 @@ exports.UserServices = {
     blockUserIntoDB,
     unblockUserIntoDB,
     followUserIntoDB,
+    unfollowUserFromDB,
     getProfileFromDB,
     updateProfileIntoDB,
     contactUsViaMail,
