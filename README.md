@@ -1,4 +1,4 @@
-# RideX || Bike Reservation System
+<!-- # RideX || Bike Reservation System
 
 ### [Live URL](https://ridex-alpha.vercel.app) | [Base URL (Server)](https://ridex-server.vercel.app)
 
@@ -113,4 +113,4 @@ yarn dev
 npm run dev
 ```
 
-That's it! The application should now be running locally.
+That's it! The application should now be running locally. -->

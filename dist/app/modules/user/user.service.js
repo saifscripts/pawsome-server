@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const QueryBuilder_1 = __importDefault(require("../../builders/QueryBuilder"));
 const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
@@ -134,6 +135,38 @@ const unblockUserIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* ()
         data: result,
     };
 });
+const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
+    const followingUser = yield user_model_1.User.findById(followingId);
+    if (!followingUser) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    if (followingUser.isDeleted) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    if (followingUser.status === user_constant_1.USER_STATUS.BLOCKED) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
+    }
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        // write operations
+        const result = yield user_model_1.User.findByIdAndUpdate(userId, { $push: { following: followingId } }, { new: true, session });
+        yield user_model_1.User.findByIdAndUpdate(followingId, { $push: { follower: userId } }, { new: true, session });
+        // commit transaction and end session
+        yield session.commitTransaction();
+        yield session.endSession();
+        return {
+            statusCode: http_status_1.default.OK,
+            message: 'User is followed successfully!',
+            data: result,
+        };
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw error;
+    }
+});
 const getProfileFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(id);
     return {
@@ -198,6 +231,7 @@ exports.UserServices = {
     removeAdminFromDB,
     blockUserIntoDB,
     unblockUserIntoDB,
+    followUserIntoDB,
     getProfileFromDB,
     updateProfileIntoDB,
     contactUsViaMail,

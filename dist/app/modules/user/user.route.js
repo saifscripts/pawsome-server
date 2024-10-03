@@ -27,6 +27,12 @@ router
     .route('/:id/unblock')
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), user_controller_1.UserControllers.unblockUser);
 router
+    .route('/:id/follow')
+    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), user_controller_1.UserControllers.followUser);
+router
+    .route('/:id/unfollow')
+    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), user_controller_1.UserControllers.followUser);
+router
     .route('/me')
     .get((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), user_controller_1.UserControllers.getProfile)
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), (0, validateRequest_1.default)(user_validation_1.UserValidations.updateProfileValidationSchema), user_controller_1.UserControllers.updateProfile);
