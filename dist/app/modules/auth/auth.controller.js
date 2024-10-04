@@ -39,7 +39,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 }));
 // Route: /api/v1/auth/change-password (PUT)
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield auth_service_1.AuthServices.changePassword(req.user, req.body);
+    const result = yield auth_service_1.AuthServices.changePassword(req.user._id, req.body);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/auth/forget-password (POST)

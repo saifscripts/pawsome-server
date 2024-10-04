@@ -97,7 +97,11 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         data: null,
     };
 });
-const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const changePassword = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userId).select('+password');
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
     const isPasswordMatched = yield user_model_1.User.comparePassword(payload === null || payload === void 0 ? void 0 : payload.currentPassword, user === null || user === void 0 ? void 0 : user.password);
     if (!isPasswordMatched) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Wrong password!');

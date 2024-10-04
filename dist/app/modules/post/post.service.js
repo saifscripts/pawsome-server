@@ -17,7 +17,6 @@ const http_status_1 = __importDefault(require("http-status"));
 const QueryBuilder_1 = __importDefault(require("../../builders/QueryBuilder"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_constant_1 = require("../user/user.constant");
-const user_model_1 = require("../user/user.model");
 const post_model_1 = require("./post.model");
 const createPostIntoDB = (authorId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const newPost = yield post_model_1.Post.create(Object.assign(Object.assign({}, payload), { author: authorId }));
@@ -60,9 +59,8 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
         data: posts,
     };
 });
-const getPostFromDB = (postId, decodedUser) => __awaiter(void 0, void 0, void 0, function* () {
+const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c;
-    const user = yield user_model_1.User.findById(decodedUser === null || decodedUser === void 0 ? void 0 : decodedUser.id);
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
         ((_b = user === null || user === void 0 ? void 0 : user.subscription) === null || _b === void 0 ? void 0 : _b.endDate) > new Date();
     const post = yield post_model_1.Post.findOne({ _id: postId, isPublished: true });
