@@ -1,6 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.failPage = exports.successPage = void 0;
+exports.failPage = exports.successPage = exports.PaymentStatus = exports.PAYMENT_STATUS = exports.SUBSCRIPTION_FEE = exports.SubscriptionTypes = exports.SUBSCRIPTION_TYPE = void 0;
+exports.SUBSCRIPTION_TYPE = {
+    MONTHLY: 'monthly',
+    YEARLY: 'yearly',
+};
+exports.SubscriptionTypes = ['monthly', 'yearly'];
+exports.SUBSCRIPTION_FEE = {
+    monthly: 10,
+    yearly: 100,
+};
+exports.PAYMENT_STATUS = {
+    PENDING: 'pending',
+    SUCCESS: 'success',
+    FAILED: 'failed',
+};
+exports.PaymentStatus = ['pending', 'success', 'failed'];
 exports.successPage = `
 <!doctype html>
 <html lang="en">

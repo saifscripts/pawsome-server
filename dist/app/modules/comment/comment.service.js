@@ -17,7 +17,8 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const post_model_1 = require("../post/post.model");
 const comment_model_1 = require("./comment.model");
-const createCommentIntoDB = (authorId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const createCommentIntoDB = (authorId, // retrieved from token
+payload) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield post_model_1.Post.findById(payload.postId);
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
@@ -35,7 +36,7 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!comment) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Comment not found!');
     }
-    if (comment.author.toString() !== authorId) {
+    if (comment.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to update this comment!');
     }
     const updatedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, payload, { new: true });
@@ -53,7 +54,7 @@ const deleteCommentFromDB = (commentId, authorId) => __awaiter(void 0, void 0, v
     if (!comment) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Comment not found!');
     }
-    if (comment.author.toString() !== authorId) {
+    if (comment.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to delete this comment!');
     }
     const deletedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, { isDeleted: true }, { new: true });

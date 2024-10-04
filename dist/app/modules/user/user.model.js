@@ -21,6 +21,7 @@ const UserSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
+    phone: { type: String, required: true },
     avatarURL: { type: String, required: false },
     role: {
         type: String,
@@ -40,8 +41,10 @@ const UserSchema = new mongoose_1.Schema({
         enum: user_constant_1.UserType,
         default: user_constant_1.USER_TYPE.BASIC,
     },
-    subscriptionStartDate: Date,
-    subscriptionEndDate: Date,
+    subscription: {
+        startDate: Date,
+        endDate: Date,
+    },
     followers: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

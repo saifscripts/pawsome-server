@@ -23,28 +23,27 @@ const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
 }));
 // Route: /api/users/:id/follow (PUT)
 const followUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.followUserIntoDB(req.user.id, req.params.id);
+    const result = yield user_service_1.UserServices.followUserIntoDB(req.user._id, req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/users/:id/unfollow (PUT)
 const unfollowUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.unfollowUserFromDB(req.user.id, req.params.id);
+    const result = yield user_service_1.UserServices.unfollowUserFromDB(req.user._id, req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/users/me (GET)
 const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.getMeFromDB(req.user.id);
+    const result = yield user_service_1.UserServices.getMeFromDB(req.user._id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/users/me (PUT)
 const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.user;
-    const result = yield user_service_1.UserServices.updateProfileIntoDB(id, req.body);
+    const result = yield user_service_1.UserServices.updateProfileIntoDB(req.user._id, req.body);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/users/avatar (POST)
 const updateAvatar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.updateAvatar(req.user.id, req.file);
+    const result = yield user_service_1.UserServices.updateAvatar(req.user._id, req.file);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/users/contact-us (POST)

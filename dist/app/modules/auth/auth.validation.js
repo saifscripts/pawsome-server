@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthValidations = void 0;
+const validator_1 = __importDefault(require("validator"));
 const zod_1 = require("zod");
 const signupValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -19,6 +23,11 @@ const signupValidationSchema = zod_1.z.object({
             required_error: 'Password is required',
         })
             .min(6, 'Password must be at least 6 characters long'),
+        phone: zod_1.z
+            .string({ required_error: 'You must provide your phone number!' })
+            .refine((value) => validator_1.default.isMobilePhone(value), {
+            message: 'Invalid phone number',
+        }),
     }),
 });
 const loginValidationSchema = zod_1.z.object({

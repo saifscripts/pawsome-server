@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const QueryBuilder_1 = __importDefault(require("../../builders/QueryBuilder"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_constant_1 = require("../user/user.constant");
@@ -28,10 +27,10 @@ const createPostIntoDB = (authorId, payload) => __awaiter(void 0, void 0, void 0
         data: newPost,
     };
 });
-const getPostsFromDB = (decodedUser, query) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(decodedUser === null || decodedUser === void 0 ? void 0 : decodedUser.id);
+const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
-        (user === null || user === void 0 ? void 0 : user.subscriptionEndDate) > new Date();
+        ((_a = user === null || user === void 0 ? void 0 : user.subscription) === null || _a === void 0 ? void 0 : _a.endDate) > new Date();
     const postQuery = new QueryBuilder_1.default(post_model_1.Post.find({ isPublished: true }), query)
         // .search(PostSearchableFields)
         .filter()
@@ -62,10 +61,10 @@ const getPostsFromDB = (decodedUser, query) => __awaiter(void 0, void 0, void 0,
     };
 });
 const getPostFromDB = (postId, decodedUser) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b, _c;
     const user = yield user_model_1.User.findById(decodedUser === null || decodedUser === void 0 ? void 0 : decodedUser.id);
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
-        (user === null || user === void 0 ? void 0 : user.subscriptionEndDate) > new Date();
+        ((_b = user === null || user === void 0 ? void 0 : user.subscription) === null || _b === void 0 ? void 0 : _b.endDate) > new Date();
     const post = yield post_model_1.Post.findOne({ _id: postId, isPublished: true });
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
@@ -77,7 +76,7 @@ const getPostFromDB = (postId, decodedUser) => __awaiter(void 0, void 0, void 0,
             data: {
                 _id: post._id,
                 title: post.title,
-                content: ((_a = post.content) === null || _a === void 0 ? void 0 : _a.substring(0, 100)) + '...',
+                content: ((_c = post.content) === null || _c === void 0 ? void 0 : _c.substring(0, 100)) + '...',
                 upvotes: post.upvotes,
                 downvotes: post.downvotes,
                 isPremium: true,
@@ -96,7 +95,7 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
-    if (post.author.toString() !== authorId) {
+    if (post.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to update this post!');
     }
     const updatedPost = yield post_model_1.Post.findOneAndUpdate({ _id: postId, author: authorId }, payload, { new: true });
@@ -114,7 +113,7 @@ const deletePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 0,
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
-    if (post.author.toString() !== authorId) {
+    if (post.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to delete this post!');
     }
     const deletedPost = yield post_model_1.Post.findOneAndUpdate({ _id: postId, author: authorId }, { isDeleted: true }, { new: true });
@@ -133,7 +132,7 @@ const upvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 0,
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     let updateQuery;
-    if (post.upvotes.includes(new mongoose_1.default.Types.ObjectId(authorId))) {
+    if (post.upvotes.includes(authorId)) {
         // already upvoted
         updateQuery = {
             $pull: { upvotes: authorId },
@@ -164,7 +163,7 @@ const downvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     let updateQuery;
-    if (post.downvotes.includes(new mongoose_1.default.Types.ObjectId(authorId))) {
+    if (post.downvotes.includes(authorId)) {
         // already downvoted
         updateQuery = {
             $pull: { downvotes: authorId },

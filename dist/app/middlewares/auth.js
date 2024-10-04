@@ -35,7 +35,7 @@ const auth = (...authorizedRoles) => {
         // decode the token
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
         const { id } = decoded;
-        const user = yield user_model_1.User.findById(id);
+        const user = yield user_model_1.User.findById(id).select('+password');
         // check if user exists
         if (!user) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
@@ -52,7 +52,7 @@ const auth = (...authorizedRoles) => {
         if (authorizedRoles && !authorizedRoles.includes(user.role)) {
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
         }
-        req.user = decoded;
+        req.user = user;
         next();
     }));
 };

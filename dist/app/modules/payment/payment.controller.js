@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentControllers = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const payment_service_1 = require("./payment.service");
-// Route: /api/v1/payment/confirm-rental (POST)
+// Route: /api/v1/payment/initiate-payment (POST)
 const initiatePayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield payment_service_1.PaymentServices.initiatePayment(req.query.TXNID);
+    const result = yield payment_service_1.PaymentServices.initiatePaymentService(req.body.subscriptionType, req.user);
     res.send(result);
 }));
-// Route: /api/v1/payment/complete-rental (POST)
+// Route: /api/v1/payment/complete-subscription (POST)
 const confirmSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield payment_service_1.PaymentServices.confirmSubscription(req.query.TXNID);
     res.send(result);

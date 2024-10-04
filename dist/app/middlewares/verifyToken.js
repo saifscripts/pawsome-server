@@ -44,7 +44,7 @@ const verifyToken = (0, catchAsync_1.default)((req, _res, next) => __awaiter(voi
             next();
             return;
         }
-        req.user = decoded;
+        req.user = user;
         next();
     }
     catch (_e) {

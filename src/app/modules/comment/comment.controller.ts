@@ -5,7 +5,7 @@ import { CommentServices } from './comment.service';
 // Route: /api/v1/comments/ (POST)
 const createComment = catchAsync(async (req, res) => {
     const result = await CommentServices.createCommentIntoDB(
-        req.user.id,
+        req.user._id,
         req.body,
     );
     sendResponse(res, result);
@@ -15,7 +15,7 @@ const createComment = catchAsync(async (req, res) => {
 const updateComment = catchAsync(async (req, res) => {
     const result = await CommentServices.updateCommentIntoDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
         req.body,
     );
     sendResponse(res, result);
@@ -25,7 +25,7 @@ const updateComment = catchAsync(async (req, res) => {
 const deleteComment = catchAsync(async (req, res) => {
     const result = await CommentServices.deleteCommentFromDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
     );
     sendResponse(res, result);
 });

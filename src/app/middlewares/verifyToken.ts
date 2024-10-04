@@ -40,7 +40,7 @@ const verifyToken = catchAsync(async (req, _res, next) => {
             next();
             return;
         }
-        req.user = decoded;
+        req.user = user;
         next();
     } catch {
         next();

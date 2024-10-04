@@ -97,17 +97,13 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         data: null,
     };
 });
-const changePassword = (decodedUser, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(decodedUser === null || decodedUser === void 0 ? void 0 : decodedUser.id).select('+password');
-    if (!user) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
-    }
+const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isPasswordMatched = yield user_model_1.User.comparePassword(payload === null || payload === void 0 ? void 0 : payload.currentPassword, user === null || user === void 0 ? void 0 : user.password);
     if (!isPasswordMatched) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Wrong password!');
     }
     const hashedPassword = yield bcrypt_1.default.hash(payload.newPassword, Number(config_1.default.bcrypt_salt_rounds));
-    yield user_model_1.User.findByIdAndUpdate(decodedUser.id, {
+    yield user_model_1.User.findByIdAndUpdate(user._id, {
         password: hashedPassword,
     }, {
         new: true,

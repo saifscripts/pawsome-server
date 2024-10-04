@@ -18,7 +18,7 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const post_service_1 = require("./post.service");
 // Route: /api/v1/posts/ (POST)
 const createPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.createPostIntoDB(req.user.id, req.body);
+    const result = yield post_service_1.PostServices.createPostIntoDB(req.user._id, req.body);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/ (GET)
@@ -33,22 +33,22 @@ const getPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
 }));
 // Route: /api/v1/posts/:id (PUT)
 const updatePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.updatePostIntoDB(req.params.id, req.user.id, req.body);
+    const result = yield post_service_1.PostServices.updatePostIntoDB(req.params.id, req.user._id, req.body);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/:id (DELETE)
 const deletePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.deletePostFromDB(req.params.id, req.user.id);
+    const result = yield post_service_1.PostServices.deletePostFromDB(req.params.id, req.user._id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/:id/upvote (PUT)
 const upvotePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.upvotePostFromDB(req.params.id, req.user.id);
+    const result = yield post_service_1.PostServices.upvotePostFromDB(req.params.id, req.user._id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/:id/downvote (PUT)
 const downvotePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.downvotePostFromDB(req.params.id, req.user.id);
+    const result = yield post_service_1.PostServices.downvotePostFromDB(req.params.id, req.user._id);
     (0, sendResponse_1.default)(res, result);
 }));
 exports.PostControllers = {

@@ -34,7 +34,7 @@ const getUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
-    if (userId === followingId) {
+    if (userId.toString() === followingId) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You can't follow yourself!");
     }
     const followingUser = yield user_model_1.User.findById(followingId);
@@ -78,7 +78,7 @@ const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void
 });
 const unfollowUserFromDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    if (userId === followingId) {
+    if (userId.toString() === followingId) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You can't follow/unfollow yourself!");
     }
     const followingUser = yield user_model_1.User.findById(followingId);
@@ -155,7 +155,7 @@ const updateAvatar = (id, image) => __awaiter(void 0, void 0, void 0, function* 
     if (!image) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Avatar is required');
     }
-    const avatarURL = yield (0, uploadImage_1.default)(image.buffer, id, 'avatar');
+    const avatarURL = yield (0, uploadImage_1.default)(image.buffer, id.toString(), 'avatar');
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(id, { avatarURL }, {
         new: true,
     });

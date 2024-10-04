@@ -1,10 +1,14 @@
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
 import { Post } from '../post/post.model';
 import { IComment } from './comment.interface';
 import { Comment } from './comment.model';
 
-const createCommentIntoDB = async (authorId: string, payload: IComment) => {
+const createCommentIntoDB = async (
+    authorId: mongoose.Types.ObjectId, // retrieved from token
+    payload: IComment,
+) => {
     const post = await Post.findById(payload.postId);
 
     if (!post) {
@@ -22,7 +26,7 @@ const createCommentIntoDB = async (authorId: string, payload: IComment) => {
 
 const updateCommentIntoDB = async (
     commentId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
     payload: Partial<IComment>,
 ) => {
     const comment = await Comment.findById(commentId);
@@ -31,7 +35,7 @@ const updateCommentIntoDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Comment not found!');
     }
 
-    if (comment.author.toString() !== authorId) {
+    if (comment.author.toString() !== authorId.toString()) {
         throw new AppError(
             httpStatus.UNAUTHORIZED,
             'You are not authorized to update this comment!',
@@ -57,7 +61,7 @@ const updateCommentIntoDB = async (
 
 const deleteCommentFromDB = async (
     commentId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
 ) => {
     const comment = await Comment.findById(commentId);
 
@@ -65,7 +69,7 @@ const deleteCommentFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Comment not found!');
     }
 
-    if (comment.author.toString() !== authorId) {
+    if (comment.author.toString() !== authorId.toString()) {
         throw new AppError(
             httpStatus.UNAUTHORIZED,
             'You are not authorized to delete this comment!',
