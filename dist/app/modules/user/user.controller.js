@@ -16,39 +16,9 @@ exports.UserControllers = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const user_service_1 = require("./user.service");
-// Route: /api/v1/users/ (GET)
-const getUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.getUsersFromDB(req.query);
-    (0, sendResponse_1.default)(res, result);
-}));
 // Route: /api/v1/users/:id (GET)
 const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.UserServices.getUserFromDB(req.params.id);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/v1/users/:id (DELETE)
-const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.deleteUserFromDB(req.params.id);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/v1/users/:id/make-admin (PUT)
-const makeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.makeAdminIntoDB(req.params.id);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/users/:id/remove-admin (PUT)
-const removeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.removeAdminFromDB(req.params.id);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/v1/users/:id/block (PUT)
-const blockUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.blockUserIntoDB(req.params.id);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/users/:id/unblock (PUT)
-const unblockUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.unblockUserIntoDB(req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/users/:id/follow (PUT)
@@ -83,13 +53,7 @@ const contactUs = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     (0, sendResponse_1.default)(res, result);
 }));
 exports.UserControllers = {
-    getUsers,
     getUser,
-    deleteUser,
-    makeAdmin,
-    removeAdmin,
-    blockUser,
-    unblockUser,
     followUser,
     unfollowUser,
     getMe,
