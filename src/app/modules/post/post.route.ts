@@ -17,4 +17,6 @@ router
         PostControllers.createPost,
     );
 
+router.route('/:id').get(verifyToken, PostControllers.getPost);
+
 export const PostRoutes = router;

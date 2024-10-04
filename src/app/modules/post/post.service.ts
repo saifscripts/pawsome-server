@@ -21,14 +21,12 @@ const getPostsFromDB = async (
     query: Record<string, unknown>,
 ) => {
     const user = await User.findById(decodedUser?.id);
-
     const isPremiumUser =
-        user &&
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscriptionEndDate > new Date();
 
     const postQuery = new QueryBuilder(Post.find(), query)
-        // .search(UserSearchableFields)
+        // .search(PostSearchableFields)
         .filter()
         .sort()
         .paginate()
@@ -58,7 +56,37 @@ const getPostsFromDB = async (
     };
 };
 
+const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
+    const user = await User.findById(decodedUser?.id);
+    const isPremiumUser =
+        user?.userType === USER_TYPE.PREMIUM &&
+        user?.subscriptionEndDate > new Date();
+
+    const post = await Post.findById(postId);
+
+    if (!isPremiumUser && post?.isPremium) {
+        return {
+            statusCode: httpStatus.OK,
+            message: 'Posts retrieved successfully',
+            data: {
+                title: post.title,
+                content: post.content?.substring(0, 100) + '...',
+                upvotes: post.upvotes,
+                downvotes: post.downvotes,
+                isPremium: true,
+            },
+        };
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Posts retrieved successfully',
+        data: post,
+    };
+};
+
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
+    getPostFromDB,
 };

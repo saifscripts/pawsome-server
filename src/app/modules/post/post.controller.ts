@@ -14,7 +14,14 @@ const getPosts = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/posts/:id (GET)
+const getPost = catchAsync(async (req, res) => {
+    const result = await PostServices.getPostFromDB(req.params.id, req.user);
+    sendResponse(res, result);
+});
+
 export const PostControllers = {
     createPost,
     getPosts,
+    getPost,
 };
