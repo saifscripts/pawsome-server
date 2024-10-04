@@ -193,6 +193,72 @@ const unblockUserIntoDB = async (id: string) => {
     };
 };
 
+const publishPostIntoDB = async (id: string) => {
+    const post = await Post.findById(id);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (post.isDeleted) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (post.isPublished) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Post is already published!',
+        );
+    }
+
+    const result = await Post.findByIdAndUpdate(
+        id,
+        {
+            isPublished: true,
+        },
+        { new: true },
+    );
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post is published successfully!',
+        data: result,
+    };
+};
+
+const unpublishPostIntoDB = async (id: string) => {
+    const post = await Post.findById(id);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (post.isDeleted) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (!post.isPublished) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Post is already unpublished!',
+        );
+    }
+
+    const result = await Post.findByIdAndUpdate(
+        id,
+        {
+            isPublished: false,
+        },
+        { new: true },
+    );
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post is unpublished successfully!',
+        data: result,
+    };
+};
+
 export const AdminServices = {
     getPostsFromDB,
     getUsersFromDB,
@@ -201,4 +267,6 @@ export const AdminServices = {
     removeAdminFromDB,
     blockUserIntoDB,
     unblockUserIntoDB,
+    publishPostIntoDB,
+    unpublishPostIntoDB,
 };

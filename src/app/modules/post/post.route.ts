@@ -20,7 +20,11 @@ router
 router
     .route('/:id')
     .get(verifyToken, PostControllers.getPost)
-    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.updatePost)
+    .put(
+        auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+        validateRequest(PostValidations.updatePostValidationSchema),
+        PostControllers.updatePost,
+    )
     .delete(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.deletePost);
 
 router.put(

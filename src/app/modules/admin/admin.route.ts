@@ -29,4 +29,12 @@ router
 
 router.route('/posts').get(auth(USER_ROLE.ADMIN), AdminControllers.getPosts);
 
+router
+    .route('/posts/:id/publish')
+    .put(auth(USER_ROLE.ADMIN), AdminControllers.publishPost);
+
+router
+    .route('/posts/:id/unpublish')
+    .put(auth(USER_ROLE.ADMIN), AdminControllers.unpublishPost);
+
 export const AdminRoutes = router;

@@ -44,6 +44,18 @@ const unblockUser = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/admin/posts/:id/publish (PUT)
+const publishPost = catchAsync(async (req, res) => {
+    const result = await AdminServices.publishPostIntoDB(req.params.id);
+    sendResponse(res, result);
+});
+
+// Route: /api/v1/admin/posts/:id/unpublish (PUT)
+const unpublishPost = catchAsync(async (req, res) => {
+    const result = await AdminServices.unpublishPostIntoDB(req.params.id);
+    sendResponse(res, result);
+});
+
 export const AdminControllers = {
     getPosts,
     getUsers,
@@ -52,4 +64,6 @@ export const AdminControllers = {
     removeAdmin,
     blockUser,
     unblockUser,
+    publishPost,
+    unpublishPost,
 };
