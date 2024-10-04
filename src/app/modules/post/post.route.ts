@@ -17,6 +17,10 @@ router
         PostControllers.createPost,
     );
 
-router.route('/:id').get(verifyToken, PostControllers.getPost);
+router
+    .route('/:id')
+    .get(verifyToken, PostControllers.getPost)
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.updatePost);
+// .delete(auth(USER_ROLE.ADMIN), PostControllers.deletePost);
 
 export const PostRoutes = router;

@@ -20,8 +20,19 @@ const getPost = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/posts/:id (PUT)
+const updatePost = catchAsync(async (req, res) => {
+    const result = await PostServices.updatePostIntoDB(
+        req.params.id,
+        req.user.id,
+        req.body,
+    );
+    sendResponse(res, result);
+});
+
 export const PostControllers = {
     createPost,
     getPosts,
     getPost,
+    updatePost,
 };

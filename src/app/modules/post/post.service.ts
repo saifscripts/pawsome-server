@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import QueryBuilder from '../../builders/QueryBuilder';
+import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
 import { User } from '../user/user.model';
 import IPost from './post.interface';
@@ -85,8 +86,31 @@ const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
     };
 };
 
+const updatePostIntoDB = async (
+    postId: string,
+    authorId: string, // retrieved from token
+    payload: Partial<IPost>,
+) => {
+    const updatedPost = await Post.findOneAndUpdate(
+        { _id: postId, author: authorId },
+        payload,
+        { new: true },
+    );
+
+    if (!updatedPost) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post updated successfully!',
+        data: updatedPost,
+    };
+};
+
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
     getPostFromDB,
+    updatePostIntoDB,
 };
