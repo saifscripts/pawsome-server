@@ -4,6 +4,7 @@ import { PostCategories } from './post.constant';
 export type IPostCategory = (typeof PostCategories)[number];
 
 interface IPost {
+    _id: mongoose.Types.ObjectId;
     title: string;
     content: string;
     author: mongoose.Types.ObjectId;

@@ -20,7 +20,7 @@ router
 router
     .route('/:id')
     .get(verifyToken, PostControllers.getPost)
-    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.updatePost);
-// .delete(auth(USER_ROLE.ADMIN), PostControllers.deletePost);
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.updatePost)
+    .delete(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.deletePost);
 
 export const PostRoutes = router;

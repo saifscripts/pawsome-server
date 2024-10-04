@@ -26,7 +26,7 @@ const getPostsFromDB = async (
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscriptionEndDate > new Date();
 
-    const postQuery = new QueryBuilder(Post.find(), query)
+    const postQuery = new QueryBuilder(Post.find({ isPublished: true }), query)
         // .search(PostSearchableFields)
         .filter()
         .sort()
@@ -39,6 +39,7 @@ const getPostsFromDB = async (
         posts = posts.map((post) => {
             if (post.isPremium) {
                 return {
+                    _id: post._id,
                     title: post.title,
                     content: post.content?.substring(0, 100) + '...',
                     upvotes: post.upvotes,
@@ -63,13 +64,18 @@ const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscriptionEndDate > new Date();
 
-    const post = await Post.findById(postId);
+    const post = await Post.findOne({ _id: postId, isPublished: true });
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
 
     if (!isPremiumUser && post?.isPremium) {
         return {
             statusCode: httpStatus.OK,
             message: 'Posts retrieved successfully',
             data: {
+                _id: post._id,
                 title: post.title,
                 content: post.content?.substring(0, 100) + '...',
                 upvotes: post.upvotes,
@@ -91,6 +97,19 @@ const updatePostIntoDB = async (
     authorId: string, // retrieved from token
     payload: Partial<IPost>,
 ) => {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (post.author.toString() !== authorId) {
+        throw new AppError(
+            httpStatus.UNAUTHORIZED,
+            'You are not authorized to update this post!',
+        );
+    }
+
     const updatedPost = await Post.findOneAndUpdate(
         { _id: postId, author: authorId },
         payload,
@@ -108,9 +127,44 @@ const updatePostIntoDB = async (
     };
 };
 
+const deletePostFromDB = async (
+    postId: string,
+    authorId: string, // retrieved from token
+) => {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    if (post.author.toString() !== authorId) {
+        throw new AppError(
+            httpStatus.UNAUTHORIZED,
+            'You are not authorized to delete this post!',
+        );
+    }
+
+    const deletedPost = await Post.findOneAndUpdate(
+        { _id: postId, author: authorId },
+        { isDeleted: true },
+        { new: true },
+    );
+
+    if (!deletedPost) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post deleted successfully!',
+        data: deletedPost,
+    };
+};
+
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
     getPostFromDB,
     updatePostIntoDB,
+    deletePostFromDB,
 };

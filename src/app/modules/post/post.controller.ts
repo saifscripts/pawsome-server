@@ -30,9 +30,19 @@ const updatePost = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/posts/:id (DELETE)
+const deletePost = catchAsync(async (req, res) => {
+    const result = await PostServices.deletePostFromDB(
+        req.params.id,
+        req.user.id,
+    );
+    sendResponse(res, result);
+});
+
 export const PostControllers = {
     createPost,
     getPosts,
     getPost,
     updatePost,
+    deletePost,
 };
