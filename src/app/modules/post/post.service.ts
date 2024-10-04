@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
@@ -161,10 +162,92 @@ const deletePostFromDB = async (
     };
 };
 
+const upvotePostFromDB = async (
+    postId: string,
+    authorId: string, // retrieved from token
+) => {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    let updateQuery: mongoose.UpdateQuery<IPost>;
+
+    if (post.upvotes.includes(new mongoose.Types.ObjectId(authorId))) {
+        // already upvoted
+        updateQuery = {
+            $pull: { upvotes: authorId },
+        };
+    } else {
+        // not upvoted
+        updateQuery = {
+            $addToSet: { upvotes: authorId },
+            $pull: { downvotes: authorId },
+        };
+    }
+
+    const upvotedPost = await Post.findByIdAndUpdate(postId, updateQuery, {
+        new: true,
+    });
+
+    if (!upvotedPost) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post upvoted successfully!',
+        data: upvotedPost,
+    };
+};
+
+const downvotePostFromDB = async (
+    postId: string,
+    authorId: string, // retrieved from token
+) => {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    let updateQuery: mongoose.UpdateQuery<IPost>;
+
+    if (post.downvotes.includes(new mongoose.Types.ObjectId(authorId))) {
+        // already downvoted
+        updateQuery = {
+            $pull: { downvotes: authorId },
+        };
+    } else {
+        // not downvoted
+        updateQuery = {
+            $addToSet: { downvotes: authorId },
+            $pull: { upvotes: authorId },
+        };
+    }
+
+    const downvotedPost = await Post.findByIdAndUpdate(postId, updateQuery, {
+        new: true,
+    });
+
+    if (!downvotedPost) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Post downvoted successfully!',
+        data: downvotedPost,
+    };
+};
+
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
     getPostFromDB,
     updatePostIntoDB,
     deletePostFromDB,
+    upvotePostFromDB,
+    downvotePostFromDB,
 };

@@ -39,10 +39,30 @@ const deletePost = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/posts/:id/upvote (PUT)
+const upvotePost = catchAsync(async (req, res) => {
+    const result = await PostServices.upvotePostFromDB(
+        req.params.id,
+        req.user.id,
+    );
+    sendResponse(res, result);
+});
+
+// Route: /api/v1/posts/:id/downvote (PUT)
+const downvotePost = catchAsync(async (req, res) => {
+    const result = await PostServices.downvotePostFromDB(
+        req.params.id,
+        req.user.id,
+    );
+    sendResponse(res, result);
+});
+
 export const PostControllers = {
     createPost,
     getPosts,
     getPost,
     updatePost,
     deletePost,
+    upvotePost,
+    downvotePost,
 };

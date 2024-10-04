@@ -23,4 +23,16 @@ router
     .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.updatePost)
     .delete(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.deletePost);
 
+router.put(
+    '/:id/upvote',
+    auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+    PostControllers.upvotePost,
+);
+
+router.put(
+    '/:id/downvote',
+    auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+    PostControllers.downvotePost,
+);
+
 export const PostRoutes = router;
