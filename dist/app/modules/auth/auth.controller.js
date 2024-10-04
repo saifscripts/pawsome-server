@@ -49,9 +49,9 @@ const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 }));
 // Route: /api/v1/auth/reset-password (PUT)
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     const password = req.body.password;
-    const token = (_c = (_b = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization) === null || _b === void 0 ? void 0 : _b.split) === null || _c === void 0 ? void 0 : _c.call(_b, ' ')[1];
+    const token = (_d = (_c = (_b = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization) === null || _b === void 0 ? void 0 : _b.split) === null || _c === void 0 ? void 0 : _c.call(_b, ' ')) === null || _d === void 0 ? void 0 : _d[1];
     const result = yield auth_service_1.AuthServices.resetPassword(password, token);
     (0, sendResponse_1.default)(res, result);
 }));
