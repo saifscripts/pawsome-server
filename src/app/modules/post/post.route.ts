@@ -10,7 +10,7 @@ const router = express.Router();
 
 router
     .route('/')
-    .get(verifyToken(), PostControllers.getPosts)
+    .get(verifyToken, PostControllers.getPosts)
     .post(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         validateRequest(PostValidations.createPostValidationSchema),
