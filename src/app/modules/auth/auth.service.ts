@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { sendMail } from '../../utils/sendMail';
@@ -131,7 +132,16 @@ const refreshToken = async (token: string) => {
     };
 };
 
-const changePassword = async (user: IUser, payload: IChangePassword) => {
+const changePassword = async (
+    userId: mongoose.Types.ObjectId,
+    payload: IChangePassword,
+) => {
+    const user = await User.findById(userId).select('+password');
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+    }
+
     const isPasswordMatched = await User.comparePassword(
         payload?.currentPassword,
         user?.password as string,

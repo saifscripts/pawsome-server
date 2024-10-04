@@ -30,7 +30,7 @@ const refreshToken = catchAsync(async (req, res) => {
 
 // Route: /api/v1/auth/change-password (PUT)
 const changePassword = catchAsync(async (req, res) => {
-    const result = await AuthServices.changePassword(req.user, req.body);
+    const result = await AuthServices.changePassword(req.user._id, req.body);
     sendResponse(res, result);
 });
 

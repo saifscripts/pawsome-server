@@ -1,11 +1,9 @@
 import httpStatus from 'http-status';
-import { JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
 import { IUser } from '../user/user.interface';
-import { User } from '../user/user.model';
 import IPost from './post.interface';
 import { Post } from './post.model';
 
@@ -59,8 +57,7 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
     };
 };
 
-const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
-    const user = await User.findById(decodedUser?.id);
+const getPostFromDB = async (postId: string, user: IUser) => {
     const isPremiumUser =
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscription?.endDate > new Date();
