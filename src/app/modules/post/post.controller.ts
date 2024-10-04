@@ -4,7 +4,7 @@ import { PostServices } from './post.service';
 
 // Route: /api/v1/posts/ (POST)
 const createPost = catchAsync(async (req, res) => {
-    const result = await PostServices.createPostIntoDB(req.user.id, req.body);
+    const result = await PostServices.createPostIntoDB(req.user._id, req.body);
     sendResponse(res, result);
 });
 
@@ -24,7 +24,7 @@ const getPost = catchAsync(async (req, res) => {
 const updatePost = catchAsync(async (req, res) => {
     const result = await PostServices.updatePostIntoDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
         req.body,
     );
     sendResponse(res, result);
@@ -34,7 +34,7 @@ const updatePost = catchAsync(async (req, res) => {
 const deletePost = catchAsync(async (req, res) => {
     const result = await PostServices.deletePostFromDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
     );
     sendResponse(res, result);
 });
@@ -43,7 +43,7 @@ const deletePost = catchAsync(async (req, res) => {
 const upvotePost = catchAsync(async (req, res) => {
     const result = await PostServices.upvotePostFromDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
     );
     sendResponse(res, result);
 });
@@ -52,7 +52,7 @@ const upvotePost = catchAsync(async (req, res) => {
 const downvotePost = catchAsync(async (req, res) => {
     const result = await PostServices.downvotePostFromDB(
         req.params.id,
-        req.user.id,
+        req.user._id,
     );
     sendResponse(res, result);
 });

@@ -39,7 +39,7 @@ const auth = (...authorizedRoles: IUserRole[]): RequestHandler => {
 
         const { id } = decoded;
 
-        const user = await User.findById(id);
+        const user = await User.findById(id).select('+password');
 
         // check if user exists
         if (!user) {
@@ -64,7 +64,7 @@ const auth = (...authorizedRoles: IUserRole[]): RequestHandler => {
             );
         }
 
-        req.user = decoded;
+        req.user = user;
         next();
     });
 };

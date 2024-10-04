@@ -131,16 +131,7 @@ const refreshToken = async (token: string) => {
     };
 };
 
-const changePassword = async (
-    decodedUser: JwtPayload,
-    payload: IChangePassword,
-) => {
-    const user = await User.findById(decodedUser?.id).select('+password');
-
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
-    }
-
+const changePassword = async (user: IUser, payload: IChangePassword) => {
     const isPasswordMatched = await User.comparePassword(
         payload?.currentPassword,
         user?.password as string,
@@ -156,7 +147,7 @@ const changePassword = async (
     );
 
     await User.findByIdAndUpdate(
-        decodedUser.id,
+        user._id,
         {
             password: hashedPassword,
         },

@@ -30,8 +30,11 @@ const getUserFromDB = async (id: string) => {
     };
 };
 
-const followUserIntoDB = async (userId: string, followingId: string) => {
-    if (userId === followingId) {
+const followUserIntoDB = async (
+    userId: mongoose.Types.ObjectId,
+    followingId: string,
+) => {
+    if (userId.toString() === followingId) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             "You can't follow yourself!",
@@ -108,8 +111,11 @@ const followUserIntoDB = async (userId: string, followingId: string) => {
     }
 };
 
-const unfollowUserFromDB = async (userId: string, followingId: string) => {
-    if (userId === followingId) {
+const unfollowUserFromDB = async (
+    userId: mongoose.Types.ObjectId,
+    followingId: string,
+) => {
+    if (userId.toString() === followingId) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             "You can't follow/unfollow yourself!",
@@ -176,7 +182,7 @@ const unfollowUserFromDB = async (userId: string, followingId: string) => {
     }
 };
 
-const getMeFromDB = async (id: string) => {
+const getMeFromDB = async (id: mongoose.Types.ObjectId) => {
     const user = await User.findById(id);
 
     return {
@@ -186,7 +192,10 @@ const getMeFromDB = async (id: string) => {
     };
 };
 
-const updateProfileIntoDB = async (id: string, payload: Partial<IUser>) => {
+const updateProfileIntoDB = async (
+    id: mongoose.Types.ObjectId,
+    payload: Partial<IUser>,
+) => {
     const updatedUser = await User.findByIdAndUpdate(id, payload, {
         new: true,
     });
@@ -227,12 +236,15 @@ const contactUsViaMail = async (payload: IContactUsOptions) => {
     };
 };
 
-const updateAvatar = async (id: string, image: { buffer: Buffer }) => {
+const updateAvatar = async (
+    id: mongoose.Types.ObjectId,
+    image: { buffer: Buffer },
+) => {
     if (!image) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Avatar is required');
     }
 
-    const avatarURL = await uploadImage(image.buffer, id, 'avatar');
+    const avatarURL = await uploadImage(image.buffer, id.toString(), 'avatar');
 
     const updatedUser = await User.findByIdAndUpdate(
         id,

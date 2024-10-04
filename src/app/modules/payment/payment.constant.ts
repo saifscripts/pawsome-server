@@ -1,3 +1,23 @@
+export const SUBSCRIPTION_TYPE = {
+    MONTHLY: 'monthly',
+    YEARLY: 'yearly',
+} as const;
+
+export const SubscriptionTypes = ['monthly', 'yearly'] as const;
+
+export const SUBSCRIPTION_FEE = {
+    monthly: 10,
+    yearly: 100,
+};
+
+export const PAYMENT_STATUS = {
+    PENDING: 'pending',
+    SUCCESS: 'success',
+    FAILED: 'failed',
+} as const;
+
+export const PaymentStatus = ['pending', 'success', 'failed'] as const;
+
 export const successPage = `
 <!doctype html>
 <html lang="en">

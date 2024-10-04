@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from '../../config';
-import { IPaymentData } from './payment.interface';
+import { IInitiatePayment } from './payment.interface';
 
 export const generateTransactionId = () => {
     const timestamp = Date.now().toString(36);
@@ -8,7 +8,7 @@ export const generateTransactionId = () => {
     return `TXN-${timestamp}-${randomString}`.toUpperCase();
 };
 
-export const initiatePayment = async (paymentData: IPaymentData) => {
+export const initiatePayment = async (paymentData: IInitiatePayment) => {
     const response = await axios.post(
         `${config.payment_base_url}/jsonpost.php`!,
         {

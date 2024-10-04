@@ -8,16 +8,6 @@ import { UserValidations } from './user.validation';
 
 const router = express.Router();
 
-router.route('/:id').get(UserControllers.getUser);
-
-router
-    .route('/:id/follow')
-    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.followUser);
-
-router
-    .route('/:id/unfollow')
-    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.unfollowUser);
-
 router
     .route('/me')
     .get(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.getMe)
@@ -41,5 +31,15 @@ router
         validateRequest(UserValidations.contactUsValidationSchema),
         UserControllers.contactUs,
     );
+
+router.route('/:id').get(UserControllers.getUser);
+
+router
+    .route('/:id/follow')
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.followUser);
+
+router
+    .route('/:id/unfollow')
+    .put(auth(USER_ROLE.ADMIN, USER_ROLE.USER), UserControllers.unfollowUser);
 
 export const UserRoutes = router;

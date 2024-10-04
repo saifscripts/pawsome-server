@@ -5,18 +5,24 @@ export type IUserRole = (typeof UserRoles)[number];
 export type IUserStatus = (typeof UserStatus)[number];
 export type IUserType = (typeof UserType)[number];
 
+export type ISubscription = {
+    startDate: Date;
+    endDate: Date;
+};
+
 export interface IUser {
+    _id: mongoose.Types.ObjectId;
     name: string;
     email: string;
     password?: string;
+    phone: string;
     avatarURL?: string;
     role: IUserRole;
     status: IUserStatus;
     userType: IUserType;
     followers: mongoose.Types.ObjectId[];
     following: mongoose.Types.ObjectId[];
-    subscriptionStartDate: Date;
-    subscriptionEndDate: Date;
+    subscription: ISubscription;
     isDeleted: boolean;
 }
 

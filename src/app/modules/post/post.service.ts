@@ -4,11 +4,15 @@ import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
+import { IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
 import IPost from './post.interface';
 import { Post } from './post.model';
 
-const createPostIntoDB = async (authorId: string, payload: IPost) => {
+const createPostIntoDB = async (
+    authorId: mongoose.Types.ObjectId,
+    payload: IPost,
+) => {
     const newPost = await Post.create({ ...payload, author: authorId });
 
     return {
@@ -18,14 +22,10 @@ const createPostIntoDB = async (authorId: string, payload: IPost) => {
     };
 };
 
-const getPostsFromDB = async (
-    decodedUser: JwtPayload,
-    query: Record<string, unknown>,
-) => {
-    const user = await User.findById(decodedUser?.id);
+const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
     const isPremiumUser =
         user?.userType === USER_TYPE.PREMIUM &&
-        user?.subscriptionEndDate > new Date();
+        user?.subscription?.endDate > new Date();
 
     const postQuery = new QueryBuilder(Post.find({ isPublished: true }), query)
         // .search(PostSearchableFields)
@@ -63,7 +63,7 @@ const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
     const user = await User.findById(decodedUser?.id);
     const isPremiumUser =
         user?.userType === USER_TYPE.PREMIUM &&
-        user?.subscriptionEndDate > new Date();
+        user?.subscription?.endDate > new Date();
 
     const post = await Post.findOne({ _id: postId, isPublished: true });
 
@@ -95,7 +95,7 @@ const getPostFromDB = async (postId: string, decodedUser: JwtPayload) => {
 
 const updatePostIntoDB = async (
     postId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
     payload: Partial<IPost>,
 ) => {
     const post = await Post.findById(postId);
@@ -104,7 +104,7 @@ const updatePostIntoDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
-    if (post.author.toString() !== authorId) {
+    if (post.author.toString() !== authorId.toString()) {
         throw new AppError(
             httpStatus.UNAUTHORIZED,
             'You are not authorized to update this post!',
@@ -130,7 +130,7 @@ const updatePostIntoDB = async (
 
 const deletePostFromDB = async (
     postId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
 ) => {
     const post = await Post.findById(postId);
 
@@ -138,7 +138,7 @@ const deletePostFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
-    if (post.author.toString() !== authorId) {
+    if (post.author.toString() !== authorId.toString()) {
         throw new AppError(
             httpStatus.UNAUTHORIZED,
             'You are not authorized to delete this post!',
@@ -164,7 +164,7 @@ const deletePostFromDB = async (
 
 const upvotePostFromDB = async (
     postId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
 ) => {
     const post = await Post.findById(postId);
 
@@ -174,7 +174,7 @@ const upvotePostFromDB = async (
 
     let updateQuery: mongoose.UpdateQuery<IPost>;
 
-    if (post.upvotes.includes(new mongoose.Types.ObjectId(authorId))) {
+    if (post.upvotes.includes(authorId)) {
         // already upvoted
         updateQuery = {
             $pull: { upvotes: authorId },
@@ -204,7 +204,7 @@ const upvotePostFromDB = async (
 
 const downvotePostFromDB = async (
     postId: string,
-    authorId: string, // retrieved from token
+    authorId: mongoose.Types.ObjectId, // retrieved from token
 ) => {
     const post = await Post.findById(postId);
 
@@ -214,7 +214,7 @@ const downvotePostFromDB = async (
 
     let updateQuery: mongoose.UpdateQuery<IPost>;
 
-    if (post.downvotes.includes(new mongoose.Types.ObjectId(authorId))) {
+    if (post.downvotes.includes(authorId)) {
         // already downvoted
         updateQuery = {
             $pull: { downvotes: authorId },

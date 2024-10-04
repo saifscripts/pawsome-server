@@ -16,6 +16,7 @@ const UserSchema = new Schema<IUser, UserModel>(
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, select: false },
+        phone: { type: String, required: true },
         avatarURL: { type: String, required: false },
         role: {
             type: String,
@@ -35,8 +36,10 @@ const UserSchema = new Schema<IUser, UserModel>(
             enum: UserType,
             default: USER_TYPE.BASIC,
         },
-        subscriptionStartDate: Date,
-        subscriptionEndDate: Date,
+        subscription: {
+            startDate: Date,
+            endDate: Date,
+        },
         followers: [
             {
                 type: Schema.Types.ObjectId,
