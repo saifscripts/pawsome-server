@@ -15,13 +15,54 @@ const createCommentIntoDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
-    const newComment = await Comment.create({ ...payload, author: authorId });
+    const session = await mongoose.startSession();
 
-    return {
-        statusCode: httpStatus.CREATED,
-        message: 'Comment created successfully',
-        data: newComment,
-    };
+    try {
+        session.startTransaction();
+
+        // create comment
+        const newComment = await Comment.create(
+            [
+                {
+                    ...payload,
+                    author: authorId,
+                },
+            ],
+            { session },
+        );
+
+        if (!newComment.length) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to create comment!',
+            );
+        }
+
+        // push comment id to post's comments
+        const updatedPost = await Post.findOneAndUpdate(
+            { _id: payload.postId },
+            { $push: { comments: newComment[0]._id } },
+            { new: true, session },
+        );
+
+        if (!updatedPost) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.CREATED,
+            message: 'Comment created successfully',
+            data: newComment[0],
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
+    }
 };
 
 const updateCommentIntoDB = async (
@@ -76,21 +117,47 @@ const deleteCommentFromDB = async (
         );
     }
 
-    const deletedComment = await Comment.findOneAndUpdate(
-        { _id: commentId, author: authorId },
-        { isDeleted: true },
-        { new: true },
-    );
+    const session = await mongoose.startSession();
 
-    if (!deletedComment) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Comment not found!');
+    try {
+        session.startTransaction();
+
+        // delete comment from db
+        const deletedComment = await Comment.findOneAndUpdate(
+            { _id: commentId, author: authorId },
+            { isDeleted: true },
+            { new: true, session },
+        );
+
+        if (!deletedComment) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Comment not found!');
+        }
+
+        // remove comment id to post's comments
+        const updatedPost = await Post.findOneAndUpdate(
+            { _id: deletedComment.postId },
+            { $pull: { comments: deletedComment._id } },
+            { new: true, session },
+        );
+
+        if (!updatedPost) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.OK,
+            message: 'Comment deleted successfully!',
+            data: deletedComment,
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
     }
-
-    return {
-        statusCode: httpStatus.OK,
-        message: 'Comment deleted successfully!',
-        data: deletedComment,
-    };
 };
 
 export const CommentServices = {

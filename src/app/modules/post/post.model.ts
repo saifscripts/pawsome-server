@@ -11,6 +11,7 @@ const PostSchema = new Schema<IPost>(
         imageUrls: [{ type: String }],
         upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
         isPremium: { type: Boolean, default: false },
         isPublished: { type: Boolean, default: true },
         isDeleted: { type: Boolean, default: false },

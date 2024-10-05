@@ -12,6 +12,7 @@ interface IPost {
     imageUrls?: string[];
     upvotes: [mongoose.Types.ObjectId];
     downvotes: [mongoose.Types.ObjectId];
+    comments: [mongoose.Types.ObjectId];
     isPremium: boolean;
     isPublished: boolean;
     isDeleted: boolean;
