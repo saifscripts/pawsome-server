@@ -61,7 +61,6 @@ const confirmSubscription = (txnId) => __awaiter(void 0, void 0, void 0, functio
         const session = yield mongoose_1.default.startSession();
         try {
             session.startTransaction();
-            // write operations
             const payment = yield payment_model_1.Payment.findOneAndUpdate({ txnId }, { status: payment_constant_1.PAYMENT_STATUS.SUCCESS }, { session });
             if (!payment) {
                 throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Something went wrong!');

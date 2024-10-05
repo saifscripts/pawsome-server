@@ -16,6 +16,7 @@ exports.AdminServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const QueryBuilder_1 = __importDefault(require("../../builders/QueryBuilder"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
+const payment_model_1 = require("../payment/payment.model");
 const post_model_1 = require("../post/post.model");
 const user_constant_1 = require("../user/user.constant");
 const user_model_1 = require("../user/user.model");
@@ -185,6 +186,38 @@ const unpublishPostIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* 
         data: result,
     };
 });
+const getPaymentsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const paymentQuery = new QueryBuilder_1.default(payment_model_1.Payment.find(), query)
+        // .search(PaymentSearchableFields)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+    const payments = yield paymentQuery.modelQuery;
+    const meta = yield paymentQuery.countTotal();
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Payments retrieved successfully',
+        data: payments,
+        meta,
+    };
+});
+const deletePaymentFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const payment = yield payment_model_1.Payment.findById(id);
+    if (!payment) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Payment not found!');
+    }
+    // delete the user
+    const deletedPayment = yield payment_model_1.Payment.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    if (!deletedPayment) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to delete payment!');
+    }
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Payment deleted successfully',
+        data: deletedPayment,
+    };
+});
 exports.AdminServices = {
     getPostsFromDB,
     getUsersFromDB,
@@ -195,4 +228,6 @@ exports.AdminServices = {
     unblockUserIntoDB,
     publishPostIntoDB,
     unpublishPostIntoDB,
+    getPaymentsFromDB,
+    deletePaymentFromDB,
 };

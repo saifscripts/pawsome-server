@@ -57,6 +57,12 @@ const UserSchema = new mongoose_1.Schema({
             ref: 'User',
         },
     ],
+    posts: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'Post',
+        },
+    ],
     isDeleted: { type: Boolean, default: false },
 }, {
     timestamps: true,

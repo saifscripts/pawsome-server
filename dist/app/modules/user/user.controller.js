@@ -43,7 +43,8 @@ const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 }));
 // Route: /api/v1/users/avatar (POST)
 const updateAvatar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.updateAvatar(req.user._id, req.file);
+    var _a;
+    const result = yield user_service_1.UserServices.updateAvatar(req.user._id, (_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.path);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/users/contact-us (POST)

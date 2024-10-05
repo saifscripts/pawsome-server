@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const post_model_1 = require("../post/post.model");
 const comment_model_1 = require("./comment.model");
@@ -23,12 +24,35 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
-    const newComment = yield comment_model_1.Comment.create(Object.assign(Object.assign({}, payload), { author: authorId }));
-    return {
-        statusCode: http_status_1.default.CREATED,
-        message: 'Comment created successfully',
-        data: newComment,
-    };
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        // create comment
+        const newComment = yield comment_model_1.Comment.create([
+            Object.assign(Object.assign({}, payload), { author: authorId }),
+        ], { session });
+        if (!newComment.length) {
+            throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create comment!');
+        }
+        // push comment id to post's comments
+        const updatedPost = yield post_model_1.Post.findOneAndUpdate({ _id: payload.postId }, { $push: { comments: newComment[0]._id } }, { new: true, session });
+        if (!updatedPost) {
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
+        }
+        // commit transaction and end session
+        yield session.commitTransaction();
+        yield session.endSession();
+        return {
+            statusCode: http_status_1.default.CREATED,
+            message: 'Comment created successfully',
+            data: newComment[0],
+        };
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw error;
+    }
 });
 const updateCommentIntoDB = (commentId, authorId, // retrieved from token
 payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,15 +81,33 @@ const deleteCommentFromDB = (commentId, authorId) => __awaiter(void 0, void 0, v
     if (comment.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to delete this comment!');
     }
-    const deletedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, { isDeleted: true }, { new: true });
-    if (!deletedComment) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Comment not found!');
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        // delete comment from db
+        const deletedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, { isDeleted: true }, { new: true, session });
+        if (!deletedComment) {
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Comment not found!');
+        }
+        // remove comment id to post's comments
+        const updatedPost = yield post_model_1.Post.findOneAndUpdate({ _id: deletedComment.postId }, { $pull: { comments: deletedComment._id } }, { new: true, session });
+        if (!updatedPost) {
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
+        }
+        // commit transaction and end session
+        yield session.commitTransaction();
+        yield session.endSession();
+        return {
+            statusCode: http_status_1.default.OK,
+            message: 'Comment deleted successfully!',
+            data: deletedComment,
+        };
     }
-    return {
-        statusCode: http_status_1.default.OK,
-        message: 'Comment deleted successfully!',
-        data: deletedComment,
-    };
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw error;
+    }
 });
 exports.CommentServices = {
     createCommentIntoDB,

@@ -61,6 +61,16 @@ const unpublishPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     const result = yield admin_service_1.AdminServices.unpublishPostIntoDB(req.params.id);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/v1/admin/payments/ (GET)
+const getPayments = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield admin_service_1.AdminServices.getPaymentsFromDB(req.query);
+    (0, sendResponse_1.default)(res, result);
+}));
+// Route: /api/v1/admin/payments/:id (DELETE)
+const deletePayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield admin_service_1.AdminServices.deletePaymentFromDB(req.params.id);
+    (0, sendResponse_1.default)(res, result);
+}));
 exports.AdminControllers = {
     getPosts,
     getUsers,
@@ -71,4 +81,6 @@ exports.AdminControllers = {
     unblockUser,
     publishPost,
     unpublishPost,
+    getPayments,
+    deletePayment,
 };

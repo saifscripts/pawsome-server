@@ -18,7 +18,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const sendMail_1 = require("../../utils/sendMail");
-const uploadImage_1 = __importDefault(require("../../utils/uploadImage"));
 const payment_utils_1 = require("../payment/payment.utils");
 const user_constant_1 = require("./user.constant");
 const user_model_1 = require("./user.model");
@@ -151,11 +150,10 @@ const contactUsViaMail = (payload) => __awaiter(void 0, void 0, void 0, function
         data: null,
     };
 });
-const updateAvatar = (id, image) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!image) {
+const updateAvatar = (id, avatarURL) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!avatarURL) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Avatar is required');
     }
-    const avatarURL = yield (0, uploadImage_1.default)(image.buffer, id.toString(), 'avatar');
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(id, { avatarURL }, {
         new: true,
     });

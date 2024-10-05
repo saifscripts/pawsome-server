@@ -32,4 +32,10 @@ router
 router
     .route('/posts/:id/unpublish')
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), admin_controller_1.AdminControllers.unpublishPost);
+router
+    .route('/payments/')
+    .get((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), admin_controller_1.AdminControllers.getPayments);
+router
+    .route('/payments/:id')
+    .delete((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), admin_controller_1.AdminControllers.deletePayment);
 exports.AdminRoutes = router;

@@ -13,12 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostControllers = void 0;
+/* eslint-disable no-undef */
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const post_service_1 = require("./post.service");
 // Route: /api/v1/posts/ (POST)
 const createPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.createPostIntoDB(req.user._id, req.body);
+    const result = yield post_service_1.PostServices.createPostIntoDB(req.user._id, req.body, req.files);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/ (GET)

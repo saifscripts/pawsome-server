@@ -75,7 +75,7 @@ const globalErrorHandler = (err, _req, res, _next) => {
         ];
     }
     // send error response
-    return res.status(statusCode).json({
+    res.status(statusCode).json({
         success: false,
         statusCode,
         message,

@@ -15,7 +15,7 @@ const routes = [
     { path: '/auth', route: auth_route_1.AuthRoutes },
     { path: '/users', route: user_route_1.UserRoutes },
     { path: '/admin', route: admin_route_1.AdminRoutes },
-    { path: '/payment', route: payment_route_1.PaymentRoutes },
+    { path: '/payments', route: payment_route_1.PaymentRoutes },
     { path: '/posts', route: post_route_1.PostRoutes },
     { path: '/comments', route: comment_route_1.CommentRoutes },
 ];

@@ -11,6 +11,7 @@ const PostSchema = new mongoose_1.Schema({
     imageUrls: [{ type: String }],
     upvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
     downvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Comment' }],
     isPremium: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
