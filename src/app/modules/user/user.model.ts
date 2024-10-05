@@ -52,6 +52,12 @@ const UserSchema = new Schema<IUser, UserModel>(
                 ref: 'User',
             },
         ],
+        posts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Post',
+            },
+        ],
         isDeleted: { type: Boolean, default: false },
     },
     {

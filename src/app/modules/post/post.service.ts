@@ -4,6 +4,7 @@ import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
 import { IUser } from '../user/user.interface';
+import { User } from '../user/user.model';
 import IPost from './post.interface';
 import { Post } from './post.model';
 
@@ -11,13 +12,53 @@ const createPostIntoDB = async (
     authorId: mongoose.Types.ObjectId,
     payload: IPost,
 ) => {
-    const newPost = await Post.create({ ...payload, author: authorId });
+    const session = await mongoose.startSession();
 
-    return {
-        statusCode: httpStatus.CREATED,
-        message: 'Post created successfully',
-        data: newPost,
-    };
+    try {
+        session.startTransaction();
+
+        // create post
+        const newPost = await Post.create([{ ...payload, author: authorId }], {
+            session,
+        });
+
+        if (!newPost.length) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to create post!',
+            );
+        }
+
+        // push post id to author's posts
+        const updatedUser = await User.findByIdAndUpdate(
+            authorId,
+            {
+                $push: { posts: newPost[0]._id },
+            },
+            { session },
+        );
+
+        if (!updatedUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to create post!',
+            );
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.CREATED,
+            message: 'Post created successfully',
+            data: newPost[0],
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
+    }
 };
 
 const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
@@ -142,21 +183,52 @@ const deletePostFromDB = async (
         );
     }
 
-    const deletedPost = await Post.findOneAndUpdate(
-        { _id: postId, author: authorId },
-        { isDeleted: true },
-        { new: true },
-    );
+    const session = await mongoose.startSession();
 
-    if (!deletedPost) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+    try {
+        session.startTransaction();
+
+        // delete post from db
+        const deletedPost = await Post.findOneAndUpdate(
+            { _id: postId, author: authorId },
+            { isDeleted: true },
+            { new: true, session },
+        );
+
+        if (!deletedPost) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
+        }
+
+        // removed post id from author's posts
+        const updatedUser = await User.findByIdAndUpdate(
+            authorId,
+            {
+                $pull: { posts: postId },
+            },
+            { session },
+        );
+
+        if (!updatedUser) {
+            throw new AppError(
+                httpStatus.INTERNAL_SERVER_ERROR,
+                'Failed to delete post!',
+            );
+        }
+
+        // commit transaction and end session
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            statusCode: httpStatus.OK,
+            message: 'Post deleted successfully!',
+            data: deletedPost,
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
     }
-
-    return {
-        statusCode: httpStatus.OK,
-        message: 'Post deleted successfully!',
-        data: deletedPost,
-    };
 };
 
 const upvotePostFromDB = async (

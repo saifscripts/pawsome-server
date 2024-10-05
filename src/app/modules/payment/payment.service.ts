@@ -77,7 +77,7 @@ const confirmSubscription = async (txnId: string) => {
 
         try {
             session.startTransaction();
-            // write operations
+
             const payment = await Payment.findOneAndUpdate(
                 { txnId },
                 { status: PAYMENT_STATUS.SUCCESS },
