@@ -1,6 +1,5 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
-import { bodyParser } from '../../middlewares/bodyParser';
 import { upload } from '../../middlewares/upload';
 import validateRequest from '../../middlewares/validateRequest';
 import verifyToken from '../../middlewares/verifyToken';
@@ -16,7 +15,6 @@ router
     .post(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         upload.array('images'),
-        bodyParser,
         validateRequest(PostValidations.createPostValidationSchema),
         PostControllers.createPost,
     );
@@ -27,7 +25,6 @@ router
     .put(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         upload.array('images'),
-        bodyParser,
         validateRequest(PostValidations.updatePostValidationSchema),
         PostControllers.updatePost,
     )
