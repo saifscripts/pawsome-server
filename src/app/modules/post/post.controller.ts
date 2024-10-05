@@ -1,10 +1,15 @@
+/* eslint-disable no-undef */
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { PostServices } from './post.service';
 
 // Route: /api/v1/posts/ (POST)
 const createPost = catchAsync(async (req, res) => {
-    const result = await PostServices.createPostIntoDB(req.user._id, req.body);
+    const result = await PostServices.createPostIntoDB(
+        req.user._id,
+        req.body,
+        req.files as Express.Multer.File[],
+    );
     sendResponse(res, result);
 });
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
@@ -11,14 +12,18 @@ import { Post } from './post.model';
 const createPostIntoDB = async (
     authorId: mongoose.Types.ObjectId,
     payload: IPost,
+    images: Express.Multer.File[],
 ) => {
+    payload.imageUrls = images?.map?.((image) => image?.path);
+    payload.author = authorId;
+
     const session = await mongoose.startSession();
 
     try {
         session.startTransaction();
 
         // create post
-        const newPost = await Post.create([{ ...payload, author: authorId }], {
+        const newPost = await Post.create([payload], {
             session,
         });
 

@@ -1,5 +1,7 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
+import { bodyParser } from '../../middlewares/bodyParser';
+import { upload } from '../../middlewares/upload';
 import validateRequest from '../../middlewares/validateRequest';
 import verifyToken from '../../middlewares/verifyToken';
 import { USER_ROLE } from '../user/user.constant';
@@ -12,6 +14,8 @@ router
     .route('/')
     .get(verifyToken, PostControllers.getPosts)
     .post(
+        upload.array('images'),
+        bodyParser,
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         validateRequest(PostValidations.createPostValidationSchema),
         PostControllers.createPost,

@@ -43,7 +43,10 @@ const updateProfile = catchAsync(async (req, res) => {
 
 // Route: /api/v1/users/avatar (POST)
 const updateAvatar = catchAsync(async (req, res) => {
-    const result = await UserServices.updateAvatar(req.user._id, req.file!);
+    const result = await UserServices.updateAvatar(
+        req.user._id,
+        req?.file?.path,
+    );
     sendResponse(res, result);
 });
 

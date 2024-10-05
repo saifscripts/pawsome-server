@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { sendMail } from '../../utils/sendMail';
-import uploadImage from '../../utils/uploadImage';
 import { replaceText } from '../payment/payment.utils';
 import { CONTACT_FORM_MESSAGE, USER_STATUS } from './user.constant';
 import { IContactUsOptions, IUser } from './user.interface';
@@ -238,13 +237,11 @@ const contactUsViaMail = async (payload: IContactUsOptions) => {
 
 const updateAvatar = async (
     id: mongoose.Types.ObjectId,
-    image: { buffer: Buffer },
+    avatarURL?: string,
 ) => {
-    if (!image) {
+    if (!avatarURL) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Avatar is required');
     }
-
-    const avatarURL = await uploadImage(image.buffer, id.toString(), 'avatar');
 
     const updatedUser = await User.findByIdAndUpdate(
         id,
