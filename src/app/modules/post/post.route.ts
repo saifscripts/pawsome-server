@@ -14,9 +14,9 @@ router
     .route('/')
     .get(verifyToken, PostControllers.getPosts)
     .post(
+        auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         upload.array('images'),
         bodyParser,
-        auth(USER_ROLE.ADMIN, USER_ROLE.USER),
         validateRequest(PostValidations.createPostValidationSchema),
         PostControllers.createPost,
     );
@@ -26,6 +26,8 @@ router
     .get(verifyToken, PostControllers.getPost)
     .put(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+        upload.array('images'),
+        bodyParser,
         validateRequest(PostValidations.updatePostValidationSchema),
         PostControllers.updatePost,
     )

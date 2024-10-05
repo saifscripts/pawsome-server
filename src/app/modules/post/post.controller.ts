@@ -31,6 +31,7 @@ const updatePost = catchAsync(async (req, res) => {
         req.params.id,
         req.user._id,
         req.body,
+        req.files as Express.Multer.File[],
     );
     sendResponse(res, result);
 });

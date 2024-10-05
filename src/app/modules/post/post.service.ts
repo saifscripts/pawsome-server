@@ -140,6 +140,7 @@ const updatePostIntoDB = async (
     postId: string,
     authorId: mongoose.Types.ObjectId, // retrieved from token
     payload: Partial<IPost>,
+    images: Express.Multer.File[],
 ) => {
     const post = await Post.findById(postId);
 
@@ -152,6 +153,16 @@ const updatePostIntoDB = async (
             httpStatus.UNAUTHORIZED,
             'You are not authorized to update this post!',
         );
+    }
+
+    const newImageUrls = images?.map?.((image) => image?.path);
+
+    if (!newImageUrls?.length && payload?.imageUrls === undefined) {
+        // no images to update (this will preserve old images)
+        payload.imageUrls = undefined;
+    } else {
+        // received new images or blank array (this will replace old images)
+        payload.imageUrls = [...(payload.imageUrls || []), ...newImageUrls];
     }
 
     const updatedPost = await Post.findOneAndUpdate(
