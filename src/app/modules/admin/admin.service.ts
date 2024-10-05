@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
+import { Payment } from '../payment/payment.model';
 import { Post } from '../post/post.model';
 import { USER_ROLE, USER_STATUS } from '../user/user.constant';
 import { User } from '../user/user.model';
@@ -259,6 +260,53 @@ const unpublishPostIntoDB = async (id: string) => {
     };
 };
 
+const getPaymentsFromDB = async (query: Record<string, unknown>) => {
+    const paymentQuery = new QueryBuilder(Payment.find(), query)
+        // .search(PaymentSearchableFields)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+    const payments = await paymentQuery.modelQuery;
+    const meta = await paymentQuery.countTotal();
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Payments retrieved successfully',
+        data: payments,
+        meta,
+    };
+};
+
+const deletePaymentFromDB = async (id: string) => {
+    const payment = await Payment.findById(id);
+
+    if (!payment) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Payment not found!');
+    }
+
+    // delete the user
+    const deletedPayment = await Payment.findByIdAndUpdate(
+        id,
+        { isDeleted: true },
+        { new: true },
+    );
+
+    if (!deletedPayment) {
+        throw new AppError(
+            httpStatus.INTERNAL_SERVER_ERROR,
+            'Failed to delete payment!',
+        );
+    }
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Payment deleted successfully',
+        data: deletedPayment,
+    };
+};
+
 export const AdminServices = {
     getPostsFromDB,
     getUsersFromDB,
@@ -269,4 +317,6 @@ export const AdminServices = {
     unblockUserIntoDB,
     publishPostIntoDB,
     unpublishPostIntoDB,
+    getPaymentsFromDB,
+    deletePaymentFromDB,
 };

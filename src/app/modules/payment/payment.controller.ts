@@ -1,4 +1,5 @@
 import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
 import { PaymentServices } from './payment.service';
 
 // Route: /api/v1/payment/initiate-payment (POST)
@@ -7,7 +8,7 @@ const initiatePayment = catchAsync(async (req, res) => {
         req.body.subscriptionType,
         req.user,
     );
-    res.send(result);
+    sendResponse(res, result);
 });
 
 // Route: /api/v1/payment/complete-subscription (POST)

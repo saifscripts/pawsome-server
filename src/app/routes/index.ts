@@ -12,7 +12,7 @@ const routes = [
     { path: '/auth', route: AuthRoutes },
     { path: '/users', route: UserRoutes },
     { path: '/admin', route: AdminRoutes },
-    { path: '/payment', route: PaymentRoutes },
+    { path: '/payments', route: PaymentRoutes },
     { path: '/posts', route: PostRoutes },
     { path: '/comments', route: CommentRoutes },
 ];

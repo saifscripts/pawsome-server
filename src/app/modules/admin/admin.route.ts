@@ -37,4 +37,12 @@ router
     .route('/posts/:id/unpublish')
     .put(auth(USER_ROLE.ADMIN), AdminControllers.unpublishPost);
 
+router
+    .route('/payments/')
+    .get(auth(USER_ROLE.ADMIN), AdminControllers.getPayments);
+
+router
+    .route('/payments/:id')
+    .delete(auth(USER_ROLE.ADMIN), AdminControllers.deletePayment);
+
 export const AdminRoutes = router;

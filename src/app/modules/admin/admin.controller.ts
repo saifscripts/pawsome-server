@@ -56,6 +56,18 @@ const unpublishPost = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/admin/payments/ (GET)
+const getPayments = catchAsync(async (req, res) => {
+    const result = await AdminServices.getPaymentsFromDB(req.query);
+    sendResponse(res, result);
+});
+
+// Route: /api/v1/admin/payments/:id (DELETE)
+const deletePayment = catchAsync(async (req, res) => {
+    const result = await AdminServices.deletePaymentFromDB(req.params.id);
+    sendResponse(res, result);
+});
+
 export const AdminControllers = {
     getPosts,
     getUsers,
@@ -66,4 +78,6 @@ export const AdminControllers = {
     unblockUser,
     publishPost,
     unpublishPost,
+    getPayments,
+    deletePayment,
 };
