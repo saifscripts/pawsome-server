@@ -8,9 +8,9 @@ import { AuthValidations } from './auth.validation';
 const router = express.Router();
 
 router.post(
-    '/signup',
+    '/register',
     validateRequest(AuthValidations.signupValidationSchema),
-    AuthControllers.signup,
+    AuthControllers.register,
 );
 
 router.post(

@@ -3,9 +3,9 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
 
-// Route: /api/v1/auth/signup (POST)
-const signup = catchAsync(async (req, res) => {
-    const result = await AuthServices.signup(req.body);
+// Route: /api/v1/auth/register (POST)
+const register = catchAsync(async (req, res) => {
+    const result = await AuthServices.register(req.body);
     sendResponse(res, result);
 });
 
@@ -49,7 +49,7 @@ const resetPassword = catchAsync(async (req, res) => {
 });
 
 export const AuthControllers = {
-    signup,
+    register,
     login,
     refreshToken,
     changePassword,

@@ -11,7 +11,7 @@ import { User } from '../user/user.model';
 import { IChangePassword } from './auth.interface';
 import { createToken } from './auth.util';
 
-const signup = async (payload: IUser) => {
+const register = async (payload: IUser) => {
     const user = await User.findOne({ email: payload?.email });
 
     if (user) {
@@ -23,10 +23,32 @@ const signup = async (payload: IUser) => {
 
     const newUser = await User.create(payload);
 
+    const jwtPayload = {
+        id: newUser._id,
+        role: newUser.role,
+    };
+
+    // create access token
+    const accessToken = createToken(
+        jwtPayload,
+        config.jwt_access_secret!,
+        config.jwt_access_exp_in!,
+    );
+
+    // create refresh token
+    const refreshToken = createToken(
+        jwtPayload,
+        config.jwt_refresh_secret!,
+        config.jwt_refresh_exp_in!,
+    );
+
     return {
         statusCode: httpStatus.CREATED,
         message: 'User registered successfully',
-        data: newUser,
+        data: {
+            accessToken,
+            refreshToken,
+        },
     };
 };
 
@@ -275,7 +297,7 @@ const resetPassword = async (password: string, token?: string) => {
 };
 
 export const AuthServices = {
-    signup,
+    register,
     login,
     refreshToken,
     changePassword,
