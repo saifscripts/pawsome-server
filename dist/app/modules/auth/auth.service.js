@@ -22,16 +22,27 @@ const sendMail_1 = require("../../utils/sendMail");
 const user_constant_1 = require("../user/user.constant");
 const user_model_1 = require("../user/user.model");
 const auth_util_1 = require("./auth.util");
-const signup = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
     if (user) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'A user already exists with this email!');
     }
     const newUser = yield user_model_1.User.create(payload);
+    const jwtPayload = {
+        id: newUser._id,
+        role: newUser.role,
+    };
+    // create access token
+    const accessToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_exp_in);
+    // create refresh token
+    const refreshToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_exp_in);
     return {
         statusCode: http_status_1.default.CREATED,
         message: 'User registered successfully',
-        data: newUser,
+        data: {
+            accessToken,
+            refreshToken,
+        },
     };
 });
 const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -180,7 +191,7 @@ const resetPassword = (password, token) => __awaiter(void 0, void 0, void 0, fun
     };
 });
 exports.AuthServices = {
-    signup,
+    register,
     login,
     refreshToken,
     changePassword,

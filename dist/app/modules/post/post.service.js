@@ -119,13 +119,23 @@ const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, functi
     };
 });
 const updatePostIntoDB = (postId, authorId, // retrieved from token
-payload) => __awaiter(void 0, void 0, void 0, function* () {
+payload, images) => __awaiter(void 0, void 0, void 0, function* () {
+    var _e;
     const post = yield post_model_1.Post.findById(postId);
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     if (post.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to update this post!');
+    }
+    const newImageUrls = (_e = images === null || images === void 0 ? void 0 : images.map) === null || _e === void 0 ? void 0 : _e.call(images, (image) => image === null || image === void 0 ? void 0 : image.path);
+    if (!(newImageUrls === null || newImageUrls === void 0 ? void 0 : newImageUrls.length) && (payload === null || payload === void 0 ? void 0 : payload.imageUrls) === undefined) {
+        // no images to update (this will preserve old images)
+        payload.imageUrls = undefined;
+    }
+    else {
+        // received new images or blank array (this will replace old images)
+        payload.imageUrls = [...(payload.imageUrls || []), ...newImageUrls];
     }
     const updatedPost = yield post_model_1.Post.findOneAndUpdate({ _id: postId, author: authorId }, payload, { new: true });
     if (!updatedPost) {

@@ -34,7 +34,7 @@ const getPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
 }));
 // Route: /api/v1/posts/:id (PUT)
 const updatePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_service_1.PostServices.updatePostIntoDB(req.params.id, req.user._id, req.body);
+    const result = yield post_service_1.PostServices.updatePostIntoDB(req.params.id, req.user._id, req.body, req.files);
     (0, sendResponse_1.default)(res, result);
 }));
 // Route: /api/v1/posts/:id (DELETE)

@@ -16,7 +16,7 @@ const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const validateRequest = (schema) => {
     return (0, catchAsync_1.default)((req, _res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const parsed = yield schema.parseAsync({
-            body: req.body,
+            body: req.body.body ? JSON.parse(req.body.body) : req.body,
             cookies: req.cookies,
         });
         req.body = parsed.body; // set request body from the parsed data

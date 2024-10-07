@@ -12,19 +12,23 @@ const signupValidationSchema = zod_1.z.object({
             .string({
             required_error: 'Name is required',
         })
-            .min(1, 'Name cannot be an empty string'),
+            .min(1, 'Name is required')
+            .min(3, 'Name must be at least 3 characters long'),
         email: zod_1.z
             .string({
             required_error: 'Email is required',
         })
+            .min(1, 'Email is required')
             .email('Invalid email address'),
         password: zod_1.z
             .string({
             required_error: 'Password is required',
         })
+            .min(1, 'Password is required')
             .min(6, 'Password must be at least 6 characters long'),
         phone: zod_1.z
-            .string({ required_error: 'You must provide your phone number!' })
+            .string({ required_error: 'Phone number is required' })
+            .min(1, 'Phone number is required')
             .refine((value) => validator_1.default.isMobilePhone(value), {
             message: 'Invalid phone number',
         }),
