@@ -24,8 +24,12 @@ const register = async (payload: IUser) => {
     const newUser = await User.create(payload);
 
     const jwtPayload = {
-        id: newUser._id,
-        role: newUser.role,
+        _id: newUser?._id,
+        role: newUser?.role,
+        name: newUser?.name,
+        email: newUser?.email,
+        phone: newUser?.phone,
+        avatarURL: newUser?.avatarURL,
     };
 
     // create access token
@@ -83,8 +87,12 @@ const login = async (payload: ILoginCredentials) => {
     }
 
     const jwtPayload = {
-        id: user._id,
-        role: user.role,
+        _id: user?._id,
+        role: user?.role,
+        name: user?.name,
+        email: user?.email,
+        phone: user?.phone,
+        avatarURL: user?.avatarURL,
     };
 
     // create access token
@@ -136,8 +144,12 @@ const refreshToken = async (token: string) => {
     }
 
     const jwtPayload = {
-        id: user._id,
-        role: user.role,
+        _id: user?._id,
+        role: user?.role,
+        name: user?.name,
+        email: user?.email,
+        phone: user?.phone,
+        avatarURL: user?.avatarURL,
     };
 
     // create access token
