@@ -29,8 +29,12 @@ const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const newUser = yield user_model_1.User.create(payload);
     const jwtPayload = {
-        id: newUser._id,
-        role: newUser.role,
+        _id: newUser === null || newUser === void 0 ? void 0 : newUser._id,
+        role: newUser === null || newUser === void 0 ? void 0 : newUser.role,
+        name: newUser === null || newUser === void 0 ? void 0 : newUser.name,
+        email: newUser === null || newUser === void 0 ? void 0 : newUser.email,
+        phone: newUser === null || newUser === void 0 ? void 0 : newUser.phone,
+        avatarURL: newUser === null || newUser === void 0 ? void 0 : newUser.avatarURL,
     };
     // create access token
     const accessToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_exp_in);
@@ -65,8 +69,12 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Wrong user id or password');
     }
     const jwtPayload = {
-        id: user._id,
-        role: user.role,
+        _id: user === null || user === void 0 ? void 0 : user._id,
+        role: user === null || user === void 0 ? void 0 : user.role,
+        name: user === null || user === void 0 ? void 0 : user.name,
+        email: user === null || user === void 0 ? void 0 : user.email,
+        phone: user === null || user === void 0 ? void 0 : user.phone,
+        avatarURL: user === null || user === void 0 ? void 0 : user.avatarURL,
     };
     // create access token
     const accessToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_exp_in);
@@ -97,8 +105,12 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
     }
     const jwtPayload = {
-        id: user._id,
-        role: user.role,
+        _id: user === null || user === void 0 ? void 0 : user._id,
+        role: user === null || user === void 0 ? void 0 : user.role,
+        name: user === null || user === void 0 ? void 0 : user.name,
+        email: user === null || user === void 0 ? void 0 : user.email,
+        phone: user === null || user === void 0 ? void 0 : user.phone,
+        avatarURL: user === null || user === void 0 ? void 0 : user.avatarURL,
     };
     // create access token
     const accessToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_exp_in);
