@@ -1,4 +1,3 @@
-import config from '../../config';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
@@ -12,12 +11,6 @@ const register = catchAsync(async (req, res) => {
 // Route: /api/v1/auth/login (POST)
 const login = catchAsync(async (req, res) => {
     const result = await AuthServices.login(req.body);
-
-    res.cookie('refreshToken', result.refreshToken, {
-        secure: config.NODE_ENV === 'production',
-        httpOnly: true,
-    });
-
     sendResponse(res, result);
 });
 
