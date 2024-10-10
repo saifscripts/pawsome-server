@@ -235,7 +235,7 @@ const forgetPassword = async (email: string) => {
         config.jwt_reset_exp_in!,
     );
 
-    const resetUILink = `${config.client_base_url}?token=${resetToken} `;
+    const resetUILink = `${config.client_base_url}/reset-password?token=${resetToken} `;
 
     const result = await sendMail({
         from: config.mail_auth_user!,
@@ -253,7 +253,7 @@ const forgetPassword = async (email: string) => {
 
     return {
         statusCode: httpStatus.OK,
-        message: 'Rest link sent successfully. Check your mail.',
+        message: 'Reset link sent successfully. Check your mail.',
         data: null,
     };
 };
