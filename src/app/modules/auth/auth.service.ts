@@ -258,9 +258,11 @@ const forgetPassword = async (email: string) => {
     };
 };
 
-const resetPassword = async (password: string, token?: string) => {
+const resetPassword = async (payload: { password: string; token: string }) => {
+    const { password, token } = payload;
+
     if (!token) {
-        throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized!');
     }
 
     const decodedUser = jwt.verify(

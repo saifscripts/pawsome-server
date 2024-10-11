@@ -35,9 +35,7 @@ const forgetPassword = catchAsync(async (req, res) => {
 
 // Route: /api/v1/auth/reset-password (PUT)
 const resetPassword = catchAsync(async (req, res) => {
-    const password = req.body.password;
-    const token = req.headers?.authorization?.split?.(' ')?.[1];
-    const result = await AuthServices.resetPassword(password, token);
+    const result = await AuthServices.resetPassword(req.body);
     sendResponse(res, result);
 });
 
