@@ -10,6 +10,12 @@ const updateProfileValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string().min(1, 'Name cannot be an empty string').optional(),
         email: zod_1.z.string().email('Invalid email address').optional(),
+        phone: zod_1.z
+            .string()
+            .refine((value) => validator_1.default.isMobilePhone(value), {
+            message: 'Invalid phone number',
+        })
+            .optional(),
     }),
 });
 const contactUsValidationSchema = zod_1.z.object({

@@ -81,6 +81,11 @@ const resetPasswordValidationSchema = zod_1.z.object({
             required_error: 'Password is required',
         })
             .min(6, 'Password must be at least 6 characters long'),
+        token: zod_1.z
+            .string({
+            required_error: 'Unauthorized!',
+        })
+            .min(1, 'Unauthorized!'),
     }),
 });
 exports.AuthValidations = {

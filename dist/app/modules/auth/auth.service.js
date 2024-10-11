@@ -159,7 +159,7 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
     };
     // create reset token
     const resetToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_reset_secret, config_1.default.jwt_reset_exp_in);
-    const resetUILink = `${config_1.default.client_base_url}?token=${resetToken} `;
+    const resetUILink = `${config_1.default.client_base_url}/reset-password?token=${resetToken} `;
     const result = yield (0, sendMail_1.sendMail)({
         from: config_1.default.mail_auth_user,
         to: email,
@@ -171,13 +171,14 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
     }
     return {
         statusCode: http_status_1.default.OK,
-        message: 'Rest link sent successfully. Check your mail.',
+        message: 'Reset link sent successfully. Check your mail.',
         data: null,
     };
 });
-const resetPassword = (password, token) => __awaiter(void 0, void 0, void 0, function* () {
+const resetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { password, token } = payload;
     if (!token) {
-        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized!');
     }
     const decodedUser = jsonwebtoken_1.default.verify(token, config_1.default.jwt_reset_secret);
     const user = yield user_model_1.User.findById(decodedUser.id);
