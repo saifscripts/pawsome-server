@@ -9,7 +9,7 @@ import { IContactUsOptions, IUser } from './user.interface';
 import { User } from './user.model';
 
 const getUserFromDB = async (id: string) => {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate('posts');
 
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
