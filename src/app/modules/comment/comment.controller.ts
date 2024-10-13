@@ -30,8 +30,17 @@ const deleteComment = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/comments/post/:postId (GET)
+const getCommentsByPostId = catchAsync(async (req, res) => {
+    const result = await CommentServices.getCommentsByPostIdFromDB(
+        req.params.postId,
+    );
+    sendResponse(res, result);
+});
+
 export const CommentControllers = {
     createComment,
     updateComment,
     deleteComment,
+    getCommentsByPostId,
 };

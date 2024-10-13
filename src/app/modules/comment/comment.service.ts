@@ -160,8 +160,19 @@ const deleteCommentFromDB = async (
     }
 };
 
+const getCommentsByPostIdFromDB = async (postId: string) => {
+    const comments = await Comment.find({ postId }).sort('-createdAt');
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Comments fetched successfully!',
+        data: comments,
+    };
+};
+
 export const CommentServices = {
     createCommentIntoDB,
     updateCommentIntoDB,
     deleteCommentFromDB,
+    getCommentsByPostIdFromDB,
 };

@@ -27,4 +27,6 @@ router
         CommentControllers.deleteComment,
     );
 
+router.route('/post/:postId').get(CommentControllers.getCommentsByPostId);
+
 export const CommentRoutes = router;
