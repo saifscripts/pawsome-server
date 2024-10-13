@@ -31,8 +31,14 @@ const deleteComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     const result = yield comment_service_1.CommentServices.deleteCommentFromDB(req.params.id, req.user._id);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/v1/comments/post/:postId (GET)
+const getCommentsByPostId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield comment_service_1.CommentServices.getCommentsByPostIdFromDB(req.params.postId);
+    (0, sendResponse_1.default)(res, result);
+}));
 exports.CommentControllers = {
     createComment,
     updateComment,
     deleteComment,
+    getCommentsByPostId,
 };

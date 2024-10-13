@@ -109,8 +109,17 @@ const deleteCommentFromDB = (commentId, authorId) => __awaiter(void 0, void 0, v
         throw error;
     }
 });
+const getCommentsByPostIdFromDB = (postId) => __awaiter(void 0, void 0, void 0, function* () {
+    const comments = yield comment_model_1.Comment.find({ postId }).sort('-createdAt');
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Comments fetched successfully!',
+        data: comments,
+    };
+});
 exports.CommentServices = {
     createCommentIntoDB,
     updateCommentIntoDB,
     deleteCommentFromDB,
+    getCommentsByPostIdFromDB,
 };

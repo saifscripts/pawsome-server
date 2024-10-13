@@ -18,4 +18,5 @@ router
     .route('/:id')
     .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), (0, validateRequest_1.default)(comment_validation_1.CommentValidations.updateCommentValidationSchema), comment_controller_1.CommentControllers.updateComment)
     .delete((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), comment_controller_1.CommentControllers.deleteComment);
+router.route('/post/:postId').get(comment_controller_1.CommentControllers.getCommentsByPostId);
 exports.CommentRoutes = router;

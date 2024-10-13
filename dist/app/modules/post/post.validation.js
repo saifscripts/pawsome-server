@@ -16,7 +16,7 @@ const createPostValidationSchema = zod_1.z.object({
             required_error: 'Category is required',
             invalid_type_error: 'Category must be Tip or Story',
         }),
-        imageUrls: zod_1.z.array(zod_1.z.string().url('Invalid image url')).optional(),
+        // imageUrls: z.array(z.string().url('Invalid image url')).optional(),
         isPremium: zod_1.z.boolean().optional(),
     }),
 });
