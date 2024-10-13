@@ -56,7 +56,10 @@ const createCommentIntoDB = async (
         return {
             statusCode: httpStatus.CREATED,
             message: 'Comment created successfully',
-            data: newComment[0],
+            data: await newComment[0].populate({
+                path: 'author',
+                select: 'name email avatarURL',
+            }),
         };
     } catch (error) {
         await session.abortTransaction();

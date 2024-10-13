@@ -11,7 +11,10 @@ import { User } from './user.model';
 const getUserFromDB = async (id: string) => {
     const user = await User.findById(id).populate({
         path: 'posts',
-        populate: { path: 'comments' },
+        populate: {
+            path: 'comments',
+            populate: { path: 'author', select: 'name email avatarURL' },
+        },
     });
 
     if (!user) {
