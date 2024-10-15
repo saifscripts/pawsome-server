@@ -7,6 +7,14 @@ const createPostValidationSchema = z.object({
             .string({ required_error: 'Title is required' })
             .min(1, { message: 'Title is required' })
             .max(200, { message: 'Title must not exceed 200 characters' }),
+        summary: z
+            .string({ required_error: 'Summary is required' })
+            .min(50, {
+                message: 'Post summary must be at least 50 characters long.',
+            })
+            .max(300, {
+                message: 'Post summary cannot exceed 300 characters.',
+            }),
         content: z
             .string({ required_error: 'Content is required' })
             .min(1, { message: 'Content is required' }),
@@ -26,6 +34,15 @@ const updatePostValidationSchema = z.object({
             .min(1, { message: 'Title is required' })
             .max(200, { message: 'Title must not exceed 200 characters' })
             .optional(),
+        summary: z
+            .string({ required_error: 'Summary is required' })
+            .min(50, {
+                message: 'Post summary must be at least 50 characters long.',
+            })
+            .max(300, {
+                message: 'Post summary cannot exceed 300 characters.',
+            })
+            .optional(),
         content: z
             .string({ required_error: 'Content is required' })
             .min(1, { message: 'Content is required' })
@@ -36,7 +53,7 @@ const updatePostValidationSchema = z.object({
                 invalid_type_error: 'Category must be Tip or Story',
             })
             .optional(),
-        imageUrls: z.array(z.string().url('Invalid image url')).optional(),
+        featuredImage: z.string().url('Invalid image url').optional(),
         isPremium: z.boolean().optional(),
     }),
 });

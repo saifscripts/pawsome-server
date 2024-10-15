@@ -90,7 +90,10 @@ const updateCommentIntoDB = async (
         { _id: commentId, author: authorId },
         payload,
         { new: true },
-    );
+    ).populate({
+        path: 'author',
+        select: 'name email avatarURL',
+    });
 
     if (!updatedComment) {
         throw new AppError(httpStatus.NOT_FOUND, 'Comment not found!');

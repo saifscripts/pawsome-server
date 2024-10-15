@@ -5,10 +5,11 @@ import IPost from './post.interface';
 const PostSchema = new Schema<IPost>(
     {
         title: { type: String, required: true },
+        summary: { type: String, required: true },
         content: { type: String, required: true },
         author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         category: { type: String, enum: PostCategories, required: true },
-        imageUrls: [{ type: String }],
+        featuredImage: { type: String, required: true },
         upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],

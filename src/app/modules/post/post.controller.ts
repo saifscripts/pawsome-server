@@ -8,7 +8,7 @@ const createPost = catchAsync(async (req, res) => {
     const result = await PostServices.createPostIntoDB(
         req.user._id,
         req.body,
-        req.files as Express.Multer.File[],
+        req.file as Express.Multer.File,
     );
     sendResponse(res, result);
 });
@@ -31,7 +31,7 @@ const updatePost = catchAsync(async (req, res) => {
         req.params.id,
         req.user._id,
         req.body,
-        req.files as Express.Multer.File[],
+        req.file as Express.Multer.File,
     );
     sendResponse(res, result);
 });

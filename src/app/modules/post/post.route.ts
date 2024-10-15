@@ -14,7 +14,7 @@ router
     .get(verifyToken, PostControllers.getPosts)
     .post(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
-        upload.array('images'),
+        upload.single('featuredImage'),
         validateRequest(PostValidations.createPostValidationSchema),
         PostControllers.createPost,
     );
@@ -24,7 +24,7 @@ router
     .get(verifyToken, PostControllers.getPost)
     .put(
         auth(USER_ROLE.ADMIN, USER_ROLE.USER),
-        upload.array('images'),
+        upload.single('featuredImage'),
         validateRequest(PostValidations.updatePostValidationSchema),
         PostControllers.updatePost,
     )

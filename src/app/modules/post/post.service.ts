@@ -12,9 +12,9 @@ import { Post } from './post.model';
 const createPostIntoDB = async (
     authorId: mongoose.Types.ObjectId,
     payload: IPost,
-    images: Express.Multer.File[],
+    featuredImage: Express.Multer.File,
 ) => {
-    payload.imageUrls = images?.map?.((image) => image?.path);
+    payload.featuredImage = featuredImage?.path;
     payload.author = authorId;
 
     const session = await mongoose.startSession();
@@ -140,7 +140,7 @@ const updatePostIntoDB = async (
     postId: string,
     authorId: mongoose.Types.ObjectId, // retrieved from token
     payload: Partial<IPost>,
-    images: Express.Multer.File[],
+    featuredImage: Express.Multer.File,
 ) => {
     const post = await Post.findById(postId);
 
@@ -155,14 +155,12 @@ const updatePostIntoDB = async (
         );
     }
 
-    const newImageUrls = images?.map?.((image) => image?.path);
-
-    if (!newImageUrls?.length && payload?.imageUrls === undefined) {
-        // no images to update (this will preserve old images)
-        payload.imageUrls = undefined;
+    if (!featuredImage?.path && payload?.featuredImage === undefined) {
+        // no image to update (this will preserve old image)
+        payload.featuredImage = undefined;
     } else {
-        // received new images or blank array (this will replace old images)
-        payload.imageUrls = [...(payload.imageUrls || []), ...newImageUrls];
+        // received new image (this will replace old image)
+        payload.featuredImage = payload.featuredImage || featuredImage?.path;
     }
 
     const updatedPost = await Post.findOneAndUpdate(
