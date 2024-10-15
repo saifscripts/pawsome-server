@@ -71,7 +71,10 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscription?.endDate > new Date();
 
-    const postQuery = new QueryBuilder(Post.find({ isPublished: true }), query)
+    const postQuery = new QueryBuilder(
+        Post.find({ isPublished: true }).populate('author'),
+        query,
+    )
         // .search(PostSearchableFields)
         .filter()
         .sort()
@@ -86,9 +89,10 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
                 return {
                     _id: post._id,
                     title: post.title,
-                    content: post.content?.substring(0, 100) + '...',
+                    summary: post.summary,
                     upvotes: post.upvotes,
                     downvotes: post.downvotes,
+                    author: post.author,
                     isPremium: true,
                 };
             }
