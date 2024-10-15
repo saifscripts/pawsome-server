@@ -108,25 +108,31 @@ const getPostFromDB = async (postId: string, user: IUser) => {
         user?.userType === USER_TYPE.PREMIUM &&
         user?.subscription?.endDate > new Date();
 
-    const post = await Post.findOne({ _id: postId, isPublished: true });
+    const post = await Post.findOne({
+        _id: postId,
+        isPublished: true,
+    }).populate('author');
 
     if (!post) {
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
     if (!isPremiumUser && post?.isPremium) {
-        return {
-            statusCode: httpStatus.OK,
-            message: 'Posts retrieved successfully',
-            data: {
-                _id: post._id,
-                title: post.title,
-                content: post.content?.substring(0, 100) + '...',
-                upvotes: post.upvotes,
-                downvotes: post.downvotes,
-                isPremium: true,
-            },
-        };
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
+
+        // return {
+        //     statusCode: httpStatus.OK,
+        //     message: 'Posts retrieved successfully',
+        //     data: {
+        //         _id: post._id,
+        //         title: post.title,
+        //         summary: post.summary,
+        //         upvotes: post.upvotes,
+        //         downvotes: post.downvotes,
+        //         author: post.author,
+        //         isPremium: true,
+        //     },
+        // };
     }
 
     return {
