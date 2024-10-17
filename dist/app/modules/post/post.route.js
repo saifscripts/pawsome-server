@@ -16,11 +16,11 @@ const router = express_1.default.Router();
 router
     .route('/')
     .get(verifyToken_1.default, post_controller_1.PostControllers.getPosts)
-    .post((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), upload_1.upload.array('images'), (0, validateRequest_1.default)(post_validation_1.PostValidations.createPostValidationSchema), post_controller_1.PostControllers.createPost);
+    .post((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), upload_1.upload.single('featuredImage'), (0, validateRequest_1.default)(post_validation_1.PostValidations.createPostValidationSchema), post_controller_1.PostControllers.createPost);
 router
     .route('/:id')
     .get(verifyToken_1.default, post_controller_1.PostControllers.getPost)
-    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), upload_1.upload.array('images'), (0, validateRequest_1.default)(post_validation_1.PostValidations.updatePostValidationSchema), post_controller_1.PostControllers.updatePost)
+    .put((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), upload_1.upload.single('featuredImage'), (0, validateRequest_1.default)(post_validation_1.PostValidations.updatePostValidationSchema), post_controller_1.PostControllers.updatePost)
     .delete((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), post_controller_1.PostControllers.deletePost);
 router.put('/:id/upvote', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), post_controller_1.PostControllers.upvotePost);
 router.put('/:id/downvote', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), post_controller_1.PostControllers.downvotePost);

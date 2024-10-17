@@ -21,9 +21,8 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_constant_1 = require("../user/user.constant");
 const user_model_1 = require("../user/user.model");
 const post_model_1 = require("./post.model");
-const createPostIntoDB = (authorId, payload, images) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    payload.imageUrls = (_a = images === null || images === void 0 ? void 0 : images.map) === null || _a === void 0 ? void 0 : _a.call(images, (image) => image === null || image === void 0 ? void 0 : image.path);
+const createPostIntoDB = (authorId, payload, featuredImage) => __awaiter(void 0, void 0, void 0, function* () {
+    payload.featuredImage = featuredImage === null || featuredImage === void 0 ? void 0 : featuredImage.path;
     payload.author = authorId;
     const session = yield mongoose_1.default.startSession();
     try {
@@ -58,10 +57,10 @@ const createPostIntoDB = (authorId, payload, images) => __awaiter(void 0, void 0
     }
 });
 const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _a;
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
-        ((_b = user === null || user === void 0 ? void 0 : user.subscription) === null || _b === void 0 ? void 0 : _b.endDate) > new Date();
-    const postQuery = new QueryBuilder_1.default(post_model_1.Post.find({ isPublished: true }), query)
+        ((_a = user === null || user === void 0 ? void 0 : user.subscription) === null || _a === void 0 ? void 0 : _a.endDate) > new Date();
+    const postQuery = new QueryBuilder_1.default(post_model_1.Post.find({ isPublished: true }).populate('author'), query)
         // .search(PostSearchableFields)
         .filter()
         .sort()
@@ -70,14 +69,14 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
     let posts = yield postQuery.modelQuery;
     if (!isPremiumUser) {
         posts = posts.map((post) => {
-            var _a;
             if (post.isPremium) {
                 return {
                     _id: post._id,
                     title: post.title,
-                    content: ((_a = post.content) === null || _a === void 0 ? void 0 : _a.substring(0, 100)) + '...',
+                    summary: post.summary,
                     upvotes: post.upvotes,
                     downvotes: post.downvotes,
+                    author: post.author,
                     isPremium: true,
                 };
             }
@@ -91,26 +90,31 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
     };
 });
 const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _b;
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
-        ((_c = user === null || user === void 0 ? void 0 : user.subscription) === null || _c === void 0 ? void 0 : _c.endDate) > new Date();
-    const post = yield post_model_1.Post.findOne({ _id: postId, isPublished: true });
+        ((_b = user === null || user === void 0 ? void 0 : user.subscription) === null || _b === void 0 ? void 0 : _b.endDate) > new Date();
+    const post = yield post_model_1.Post.findOne({
+        _id: postId,
+        isPublished: true,
+    }).populate('author');
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     if (!isPremiumUser && (post === null || post === void 0 ? void 0 : post.isPremium)) {
-        return {
-            statusCode: http_status_1.default.OK,
-            message: 'Posts retrieved successfully',
-            data: {
-                _id: post._id,
-                title: post.title,
-                content: ((_d = post.content) === null || _d === void 0 ? void 0 : _d.substring(0, 100)) + '...',
-                upvotes: post.upvotes,
-                downvotes: post.downvotes,
-                isPremium: true,
-            },
-        };
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized access!');
+        // return {
+        //     statusCode: httpStatus.OK,
+        //     message: 'Posts retrieved successfully',
+        //     data: {
+        //         _id: post._id,
+        //         title: post.title,
+        //         summary: post.summary,
+        //         upvotes: post.upvotes,
+        //         downvotes: post.downvotes,
+        //         author: post.author,
+        //         isPremium: true,
+        //     },
+        // };
     }
     return {
         statusCode: http_status_1.default.OK,
@@ -119,8 +123,7 @@ const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, functi
     };
 });
 const updatePostIntoDB = (postId, authorId, // retrieved from token
-payload, images) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
+payload, featuredImage) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield post_model_1.Post.findById(postId);
     if (!post) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
@@ -128,14 +131,13 @@ payload, images) => __awaiter(void 0, void 0, void 0, function* () {
     if (post.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to update this post!');
     }
-    const newImageUrls = (_e = images === null || images === void 0 ? void 0 : images.map) === null || _e === void 0 ? void 0 : _e.call(images, (image) => image === null || image === void 0 ? void 0 : image.path);
-    if (!(newImageUrls === null || newImageUrls === void 0 ? void 0 : newImageUrls.length) && (payload === null || payload === void 0 ? void 0 : payload.imageUrls) === undefined) {
-        // no images to update (this will preserve old images)
-        payload.imageUrls = undefined;
+    if (!(featuredImage === null || featuredImage === void 0 ? void 0 : featuredImage.path) && (payload === null || payload === void 0 ? void 0 : payload.featuredImage) === undefined) {
+        // no image to update (this will preserve old image)
+        payload.featuredImage = undefined;
     }
     else {
-        // received new images or blank array (this will replace old images)
-        payload.imageUrls = [...(payload.imageUrls || []), ...newImageUrls];
+        // received new image (this will replace old image)
+        payload.featuredImage = payload.featuredImage || (featuredImage === null || featuredImage === void 0 ? void 0 : featuredImage.path);
     }
     const updatedPost = yield post_model_1.Post.findOneAndUpdate({ _id: postId, author: authorId }, payload, { new: true });
     if (!updatedPost) {

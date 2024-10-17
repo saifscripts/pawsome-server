@@ -45,7 +45,10 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             statusCode: http_status_1.default.CREATED,
             message: 'Comment created successfully',
-            data: newComment[0],
+            data: yield newComment[0].populate({
+                path: 'author',
+                select: 'name email avatarURL',
+            }),
         };
     }
     catch (error) {
@@ -63,7 +66,10 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (comment.author.toString() !== authorId.toString()) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to update this comment!');
     }
-    const updatedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, payload, { new: true });
+    const updatedComment = yield comment_model_1.Comment.findOneAndUpdate({ _id: commentId, author: authorId }, payload, { new: true }).populate({
+        path: 'author',
+        select: 'name email avatarURL',
+    });
     if (!updatedComment) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Comment not found!');
     }

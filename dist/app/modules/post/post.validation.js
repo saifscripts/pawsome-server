@@ -9,6 +9,14 @@ const createPostValidationSchema = zod_1.z.object({
             .string({ required_error: 'Title is required' })
             .min(1, { message: 'Title is required' })
             .max(200, { message: 'Title must not exceed 200 characters' }),
+        summary: zod_1.z
+            .string({ required_error: 'Summary is required' })
+            .min(50, {
+            message: 'Post summary must be at least 50 characters long.',
+        })
+            .max(300, {
+            message: 'Post summary cannot exceed 300 characters.',
+        }),
         content: zod_1.z
             .string({ required_error: 'Content is required' })
             .min(1, { message: 'Content is required' }),
@@ -27,6 +35,15 @@ const updatePostValidationSchema = zod_1.z.object({
             .min(1, { message: 'Title is required' })
             .max(200, { message: 'Title must not exceed 200 characters' })
             .optional(),
+        summary: zod_1.z
+            .string({ required_error: 'Summary is required' })
+            .min(50, {
+            message: 'Post summary must be at least 50 characters long.',
+        })
+            .max(300, {
+            message: 'Post summary cannot exceed 300 characters.',
+        })
+            .optional(),
         content: zod_1.z
             .string({ required_error: 'Content is required' })
             .min(1, { message: 'Content is required' })
@@ -37,7 +54,7 @@ const updatePostValidationSchema = zod_1.z.object({
             invalid_type_error: 'Category must be Tip or Story',
         })
             .optional(),
-        imageUrls: zod_1.z.array(zod_1.z.string().url('Invalid image url')).optional(),
+        featuredImage: zod_1.z.string().url('Invalid image url').optional(),
         isPremium: zod_1.z.boolean().optional(),
     }),
 });
