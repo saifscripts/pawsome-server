@@ -6,6 +6,7 @@ import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
 import { IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
+import { PostSearchableFields } from './post.constant';
 import IPost from './post.interface';
 import { Post } from './post.model';
 
@@ -75,7 +76,7 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
         Post.find({ isPublished: true }).populate('author'),
         query,
     )
-        // .search(PostSearchableFields)
+        .search(PostSearchableFields)
         .filter()
         .sort()
         .paginate()
