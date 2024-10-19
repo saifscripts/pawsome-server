@@ -91,6 +91,7 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
                     _id: post._id,
                     title: post.title,
                     summary: post.summary,
+                    featuredImage: post.featuredImage,
                     upvotes: post.upvotes,
                     downvotes: post.downvotes,
                     author: post.author,
