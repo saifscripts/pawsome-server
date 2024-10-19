@@ -9,6 +9,7 @@ const PostSchema = new Schema<IPost>(
         content: { type: String, required: true },
         author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         category: { type: String, enum: PostCategories, required: true },
+        tags: [{ type: String }],
         featuredImage: { type: String, required: true },
         upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],

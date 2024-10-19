@@ -19,6 +19,12 @@ const getPosts = catchAsync(async (req, res) => {
     sendResponse(res, result);
 });
 
+// Route: /api/v1/posts/tags (GET)
+const getTags = catchAsync(async (req, res) => {
+    const result = await PostServices.getTagsFromDB(req.query);
+    sendResponse(res, result);
+});
+
 // Route: /api/v1/posts/:id (GET)
 const getPost = catchAsync(async (req, res) => {
     const result = await PostServices.getPostFromDB(req.params.id, req.user);
@@ -66,6 +72,7 @@ const downvotePost = catchAsync(async (req, res) => {
 export const PostControllers = {
     createPost,
     getPosts,
+    getTags,
     getPost,
     updatePost,
     deletePost,

@@ -11,6 +11,7 @@ interface IPost {
     featuredImage: string;
     author: mongoose.Types.ObjectId;
     category: IPostCategory;
+    tags: string[];
     upvotes: [mongoose.Types.ObjectId];
     downvotes: [mongoose.Types.ObjectId];
     comments: [mongoose.Types.ObjectId];

@@ -22,6 +22,10 @@ const createPostValidationSchema = z.object({
             required_error: 'Category is required',
             invalid_type_error: 'Category must be Tip or Story',
         }),
+        tags: z
+            .array(z.string({ invalid_type_error: 'Tags must be string' }))
+            .transform((tags) => tags.filter((tag) => Boolean(tag)))
+            .optional(),
         // imageUrls: z.array(z.string().url('Invalid image url')).optional(),
         isPremium: z.boolean().optional(),
     }),
@@ -52,6 +56,10 @@ const updatePostValidationSchema = z.object({
                 required_error: 'Category is required',
                 invalid_type_error: 'Category must be Tip or Story',
             })
+            .optional(),
+        tags: z
+            .array(z.string({ invalid_type_error: 'Tags must be string' }))
+            .transform((tags) => tags.filter((tag) => Boolean(tag)))
             .optional(),
         featuredImage: z.string().url('Invalid image url').optional(),
         isPremium: z.boolean().optional(),

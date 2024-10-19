@@ -5,4 +5,4 @@ export const POST_CATEGORY = {
 
 export const PostCategories = ['tip', 'story'] as const;
 
-export const PostSearchableFields = ['title', 'summary', 'content'];
+export const PostSearchableFields = ['title', 'summary', 'content', 'tags'];

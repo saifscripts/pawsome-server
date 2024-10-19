@@ -19,6 +19,8 @@ router
         PostControllers.createPost,
     );
 
+router.route('/tags').get(PostControllers.getTags);
+
 router
     .route('/:id')
     .get(verifyToken, PostControllers.getPost)

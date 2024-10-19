@@ -109,6 +109,23 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
     };
 };
 
+const getTagsFromDB = async (query: Record<string, unknown>) => {
+    const limit = parseInt(query.limit as string) || 10;
+
+    const tags = await Post.aggregate([
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: limit },
+    ]);
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Tags retrieved successfully',
+        data: tags,
+    };
+};
+
 const getPostFromDB = async (postId: string, user: IUser) => {
     const isPremiumUser =
         user?.userType === USER_TYPE.PREMIUM &&
@@ -340,6 +357,7 @@ const downvotePostFromDB = async (
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
+    getTagsFromDB,
     getPostFromDB,
     updatePostIntoDB,
     deletePostFromDB,
