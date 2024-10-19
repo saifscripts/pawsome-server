@@ -27,6 +27,11 @@ const getPosts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
     const result = yield post_service_1.PostServices.getPostsFromDB(req.user, req.query);
     (0, sendResponse_1.default)(res, result);
 }));
+// Route: /api/v1/posts/tags (GET)
+const getTags = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield post_service_1.PostServices.getTagsFromDB(req.query);
+    (0, sendResponse_1.default)(res, result);
+}));
 // Route: /api/v1/posts/:id (GET)
 const getPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield post_service_1.PostServices.getPostFromDB(req.params.id, req.user);
@@ -55,6 +60,7 @@ const downvotePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 exports.PostControllers = {
     createPost,
     getPosts,
+    getTags,
     getPost,
     updatePost,
     deletePost,

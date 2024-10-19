@@ -91,6 +91,20 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
         data: posts,
     };
 });
+const getTagsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const limit = parseInt(query.limit) || 10;
+    const tags = yield post_model_1.Post.aggregate([
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: limit },
+    ]);
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Tags retrieved successfully',
+        data: tags,
+    };
+});
 const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
@@ -254,6 +268,7 @@ const downvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 
 exports.PostServices = {
     createPostIntoDB,
     getPostsFromDB,
+    getTagsFromDB,
     getPostFromDB,
     updatePostIntoDB,
     deletePostFromDB,

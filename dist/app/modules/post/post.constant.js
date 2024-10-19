@@ -6,4 +6,4 @@ exports.POST_CATEGORY = {
     STORY: 'story',
 };
 exports.PostCategories = ['tip', 'story'];
-exports.PostSearchableFields = ['title', 'summary', 'content'];
+exports.PostSearchableFields = ['title', 'summary', 'content', 'tags'];

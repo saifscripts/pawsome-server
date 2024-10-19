@@ -9,6 +9,7 @@ const PostSchema = new mongoose_1.Schema({
     content: { type: String, required: true },
     author: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     category: { type: String, enum: post_constant_1.PostCategories, required: true },
+    tags: [{ type: String }],
     featuredImage: { type: String, required: true },
     upvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
     downvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],

@@ -17,6 +17,7 @@ router
     .route('/')
     .get(verifyToken_1.default, post_controller_1.PostControllers.getPosts)
     .post((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), upload_1.upload.single('featuredImage'), (0, validateRequest_1.default)(post_validation_1.PostValidations.createPostValidationSchema), post_controller_1.PostControllers.createPost);
+router.route('/tags').get(post_controller_1.PostControllers.getTags);
 router
     .route('/:id')
     .get(verifyToken_1.default, post_controller_1.PostControllers.getPost)
