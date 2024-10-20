@@ -49,6 +49,8 @@ const createCommentIntoDB = async (
             throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
         }
 
+        await updatedPost.save(); // updates totalVotes using pre middleware
+
         // commit transaction and end session
         await session.commitTransaction();
         await session.endSession();
@@ -149,6 +151,8 @@ const deleteCommentFromDB = async (
         if (!updatedPost) {
             throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
         }
+
+        await updatedPost.save(); // updates totalVotes using pre middleware
 
         // commit transaction and end session
         await session.commitTransaction();

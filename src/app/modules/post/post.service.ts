@@ -307,10 +307,12 @@ const upvotePostFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
+    const result = await upvotedPost.save(); // updates totalVotes using pre middleware
+
     return {
         statusCode: httpStatus.OK,
         message: 'Post upvoted successfully!',
-        data: upvotedPost,
+        data: result,
     };
 };
 
@@ -347,10 +349,12 @@ const downvotePostFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
     }
 
+    const result = await downvotedPost.save(); // updates totalVotes using pre middleware
+
     return {
         statusCode: httpStatus.OK,
         message: 'Post downvoted successfully!',
-        data: downvotedPost,
+        data: result,
     };
 };
 

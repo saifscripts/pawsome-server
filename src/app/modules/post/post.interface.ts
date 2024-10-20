@@ -15,6 +15,8 @@ interface IPost {
     upvotes: [mongoose.Types.ObjectId];
     downvotes: [mongoose.Types.ObjectId];
     comments: [mongoose.Types.ObjectId];
+    totalVotes: number;
+    totalComments: number;
     isPremium: boolean;
     isPublished: boolean;
     isDeleted: boolean;
