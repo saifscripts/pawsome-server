@@ -39,6 +39,7 @@ payload) => __awaiter(void 0, void 0, void 0, function* () {
         if (!updatedPost) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
         }
+        yield updatedPost.save(); // updates totalVotes using pre middleware
         // commit transaction and end session
         yield session.commitTransaction();
         yield session.endSession();
@@ -100,6 +101,7 @@ const deleteCommentFromDB = (commentId, authorId) => __awaiter(void 0, void 0, v
         if (!updatedPost) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
         }
+        yield updatedPost.save(); // updates totalVotes using pre middleware
         // commit transaction and end session
         yield session.commitTransaction();
         yield session.endSession();

@@ -33,8 +33,8 @@ const initiatePaymentService = (subscriptionType, user) => __awaiter(void 0, voi
     const paymentResponse = yield (0, payment_utils_1.initiatePayment)({
         txnId,
         amount: payment_constant_1.SUBSCRIPTION_FEE[subscriptionType],
-        successURL: `${config_1.default.base_url}/api/v1/payment/confirm-subscription?TXNID=${txnId}`,
-        failURL: `${config_1.default.base_url}/api/v1/payment/confirm-subscription?TXNID=${txnId}`,
+        successURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
+        failURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
         cancelURL: `${config_1.default.client_base_url}`,
         customerName: user === null || user === void 0 ? void 0 : user.name,
         customerEmail: user === null || user === void 0 ? void 0 : user.email,

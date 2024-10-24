@@ -117,7 +117,7 @@ const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, functi
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     if (!isPremiumUser && (post === null || post === void 0 ? void 0 : post.isPremium)) {
-        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized access!');
+        // throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
         // return {
         //     statusCode: httpStatus.OK,
         //     message: 'Posts retrieved successfully',
@@ -228,10 +228,11 @@ const upvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 0,
     if (!upvotedPost) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
+    const result = yield upvotedPost.save(); // updates totalVotes using pre middleware
     return {
         statusCode: http_status_1.default.OK,
         message: 'Post upvoted successfully!',
-        data: upvotedPost,
+        data: result,
     };
 });
 const downvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -259,10 +260,11 @@ const downvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 
     if (!downvotedPost) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
+    const result = yield downvotedPost.save(); // updates totalVotes using pre middleware
     return {
         statusCode: http_status_1.default.OK,
         message: 'Post downvoted successfully!',
-        data: downvotedPost,
+        data: result,
     };
 });
 exports.PostServices = {

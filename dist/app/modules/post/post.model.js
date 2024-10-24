@@ -14,6 +14,8 @@ const PostSchema = new mongoose_1.Schema({
     upvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
     downvotes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Comment' }],
+    totalVotes: { type: Number, default: 0 },
+    totalComments: { type: Number, default: 0 },
     isPremium: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
@@ -34,6 +36,12 @@ PostSchema.pre('findOne', function (next) {
 });
 PostSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+    next();
+});
+// Update totalVotes and totalComments before saving the post
+PostSchema.pre('save', function (next) {
+    this.totalVotes = this.upvotes.length - this.downvotes.length;
+    this.totalComments = this.comments.length;
     next();
 });
 exports.Post = (0, mongoose_1.model)('Post', PostSchema);

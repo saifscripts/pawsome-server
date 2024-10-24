@@ -7,8 +7,8 @@ exports.SUBSCRIPTION_TYPE = {
 };
 exports.SubscriptionTypes = ['monthly', 'yearly'];
 exports.SUBSCRIPTION_FEE = {
-    monthly: 10,
-    yearly: 100,
+    monthly: 99,
+    yearly: 949,
 };
 exports.PAYMENT_STATUS = {
     PENDING: 'pending',
