@@ -40,8 +40,8 @@ const initiatePaymentService = async (
     const paymentResponse = await initiatePayment({
         txnId,
         amount: SUBSCRIPTION_FEE[subscriptionType],
-        successURL: `${config.base_url}/api/v1/payment/confirm-subscription?TXNID=${txnId}`,
-        failURL: `${config.base_url}/api/v1/payment/confirm-subscription?TXNID=${txnId}`,
+        successURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
+        failURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
         cancelURL: `${config.client_base_url}`,
         customerName: user?.name,
         customerEmail: user?.email,

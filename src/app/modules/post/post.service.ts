@@ -141,8 +141,7 @@ const getPostFromDB = async (postId: string, user: IUser) => {
     }
 
     if (!isPremiumUser && post?.isPremium) {
-        throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
-
+        // throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
         // return {
         //     statusCode: httpStatus.OK,
         //     message: 'Posts retrieved successfully',

@@ -6,8 +6,8 @@ export const SUBSCRIPTION_TYPE = {
 export const SubscriptionTypes = ['monthly', 'yearly'] as const;
 
 export const SUBSCRIPTION_FEE = {
-    monthly: 10,
-    yearly: 100,
+    monthly: 99,
+    yearly: 949,
 };
 
 export const PAYMENT_STATUS = {
