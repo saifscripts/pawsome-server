@@ -24,6 +24,7 @@ import {
 const initiatePaymentService = async (
     subscriptionType: ISubscriptionType,
     user: IUser, // retrieved from token
+    redirectPath?: string,
 ) => {
     const isPremiumUser =
         user?.userType === USER_TYPE.PREMIUM &&
@@ -40,9 +41,9 @@ const initiatePaymentService = async (
     const paymentResponse = await initiatePayment({
         txnId,
         amount: SUBSCRIPTION_FEE[subscriptionType],
-        successURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
-        failURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
-        cancelURL: `${config.client_base_url}`,
+        successURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
+        failURL: `${config.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
+        cancelURL: `${config.client_base_url}${redirectPath || ''}`,
         customerName: user?.name,
         customerEmail: user?.email,
         customerPhone: user?.phone,
@@ -69,7 +70,7 @@ const initiatePaymentService = async (
     };
 };
 
-const confirmSubscription = async (txnId: string) => {
+const confirmSubscription = async (txnId: string, redirectPath?: string) => {
     const verifyResponse = await verifyPayment(txnId);
 
     if (verifyResponse && verifyResponse.pay_status === 'Successful') {
@@ -128,8 +129,8 @@ const confirmSubscription = async (txnId: string) => {
             await session.endSession();
 
             return replaceText(successPage, {
-                'primary-link': `${config.client_base_url}`,
-                'primary-text': 'Go to Home',
+                'primary-link': `${config.client_base_url}${redirectPath || ''}`,
+                'primary-text': 'Continue',
             });
         } catch (error) {
             await session.abortTransaction();
@@ -145,9 +146,9 @@ const confirmSubscription = async (txnId: string) => {
         );
 
         return replaceText(failPage, {
-            'primary-link': `${config.client_base_url}`,
-            'secondary-link': `${config.client_base_url}`,
-            'primary-text': 'Go to Home',
+            'primary-link': `${config.payment_base_url}/payment_page.php?track_id=${verifyResponse.pg_txnid}`,
+            'secondary-link': `${config.client_base_url}${redirectPath || ''}`,
+            'primary-text': 'Try Again',
             'secondary-text': 'Go Back',
         });
     }

@@ -7,6 +7,7 @@ const initiatePayment = catchAsync(async (req, res) => {
     const result = await PaymentServices.initiatePaymentService(
         req.body.subscriptionType,
         req.user,
+        req.query.redirectPath as string,
     );
     sendResponse(res, result);
 });
@@ -15,6 +16,7 @@ const initiatePayment = catchAsync(async (req, res) => {
 const confirmSubscription = catchAsync(async (req, res) => {
     const result = await PaymentServices.confirmSubscription(
         req.query.TXNID as string,
+        req.query.redirectPath as string,
     );
     res.send(result);
 });
