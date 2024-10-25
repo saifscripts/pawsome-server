@@ -94,6 +94,8 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
                     featuredImage: post.featuredImage,
                     upvotes: post.upvotes,
                     downvotes: post.downvotes,
+                    totalVotes: post.totalVotes,
+                    totalComments: post.totalComments,
                     author: post.author,
                     isPremium: true,
                 };
@@ -141,20 +143,22 @@ const getPostFromDB = async (postId: string, user: IUser) => {
     }
 
     if (!isPremiumUser && post?.isPremium) {
-        // throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
-        // return {
-        //     statusCode: httpStatus.OK,
-        //     message: 'Posts retrieved successfully',
-        //     data: {
-        //         _id: post._id,
-        //         title: post.title,
-        //         summary: post.summary,
-        //         upvotes: post.upvotes,
-        //         downvotes: post.downvotes,
-        //         author: post.author,
-        //         isPremium: true,
-        //     },
-        // };
+        return {
+            statusCode: httpStatus.OK,
+            message: 'Posts retrieved successfully',
+            data: {
+                _id: post._id,
+                title: post.title,
+                summary: post.summary,
+                featuredImage: post.featuredImage,
+                upvotes: post.upvotes,
+                downvotes: post.downvotes,
+                totalVotes: post.totalVotes,
+                totalComments: post.totalComments,
+                author: post.author,
+                isPremium: true,
+            },
+        };
     }
 
     return {

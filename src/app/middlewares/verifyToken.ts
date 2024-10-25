@@ -19,9 +19,9 @@ const verifyToken = catchAsync(async (req, _res, next) => {
             config.jwt_access_secret as string,
         ) as JwtPayload;
 
-        const { id } = decoded;
+        const { _id } = decoded;
 
-        const user = await User.findById(id);
+        const user = await User.findById(_id);
 
         // check if user exists
         if (!user) {
