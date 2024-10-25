@@ -27,8 +27,8 @@ const verifyToken = (0, catchAsync_1.default)((req, _res, next) => __awaiter(voi
     // decode the token
     try {
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
-        const { id } = decoded;
-        const user = yield user_model_1.User.findById(id);
+        const { _id } = decoded;
+        const user = yield user_model_1.User.findById(_id);
         // check if user exists
         if (!user) {
             next();

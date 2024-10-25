@@ -22,7 +22,8 @@ const user_model_1 = require("../user/user.model");
 const payment_constant_1 = require("./payment.constant");
 const payment_model_1 = require("./payment.model");
 const payment_utils_1 = require("./payment.utils");
-const initiatePaymentService = (subscriptionType, user) => __awaiter(void 0, void 0, void 0, function* () {
+const initiatePaymentService = (subscriptionType, user, // retrieved from token
+redirectPath) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
         ((_a = user === null || user === void 0 ? void 0 : user.subscription) === null || _a === void 0 ? void 0 : _a.endDate) > new Date();
@@ -33,9 +34,9 @@ const initiatePaymentService = (subscriptionType, user) => __awaiter(void 0, voi
     const paymentResponse = yield (0, payment_utils_1.initiatePayment)({
         txnId,
         amount: payment_constant_1.SUBSCRIPTION_FEE[subscriptionType],
-        successURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
-        failURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}`,
-        cancelURL: `${config_1.default.client_base_url}`,
+        successURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
+        failURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
+        cancelURL: `${config_1.default.client_base_url}${redirectPath || ''}`,
         customerName: user === null || user === void 0 ? void 0 : user.name,
         customerEmail: user === null || user === void 0 ? void 0 : user.email,
         customerPhone: user === null || user === void 0 ? void 0 : user.phone,
@@ -55,7 +56,7 @@ const initiatePaymentService = (subscriptionType, user) => __awaiter(void 0, voi
         data: paymentResponse,
     };
 });
-const confirmSubscription = (txnId) => __awaiter(void 0, void 0, void 0, function* () {
+const confirmSubscription = (txnId, redirectPath) => __awaiter(void 0, void 0, void 0, function* () {
     const verifyResponse = yield (0, payment_utils_1.verifyPayment)(txnId);
     if (verifyResponse && verifyResponse.pay_status === 'Successful') {
         const session = yield mongoose_1.default.startSession();
@@ -87,8 +88,8 @@ const confirmSubscription = (txnId) => __awaiter(void 0, void 0, void 0, functio
             yield session.commitTransaction();
             yield session.endSession();
             return (0, payment_utils_1.replaceText)(payment_constant_1.successPage, {
-                'primary-link': `${config_1.default.client_base_url}`,
-                'primary-text': 'Go to Home',
+                'primary-link': `${config_1.default.client_base_url}${redirectPath || ''}`,
+                'primary-text': 'Continue',
             });
         }
         catch (error) {
@@ -100,9 +101,9 @@ const confirmSubscription = (txnId) => __awaiter(void 0, void 0, void 0, functio
     if (verifyResponse && verifyResponse.pay_status === 'Failed') {
         yield payment_model_1.Payment.findOneAndUpdate({ txnId }, { status: payment_constant_1.PAYMENT_STATUS.FAILED });
         return (0, payment_utils_1.replaceText)(payment_constant_1.failPage, {
-            'primary-link': `${config_1.default.client_base_url}`,
-            'secondary-link': `${config_1.default.client_base_url}`,
-            'primary-text': 'Go to Home',
+            'primary-link': `${config_1.default.payment_base_url}/payment_page.php?track_id=${verifyResponse.pg_txnid}`,
+            'secondary-link': `${config_1.default.client_base_url}${redirectPath || ''}`,
+            'primary-text': 'Try Again',
             'secondary-text': 'Go Back',
         });
     }

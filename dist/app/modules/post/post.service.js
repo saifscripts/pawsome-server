@@ -78,6 +78,8 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
                     featuredImage: post.featuredImage,
                     upvotes: post.upvotes,
                     downvotes: post.downvotes,
+                    totalVotes: post.totalVotes,
+                    totalComments: post.totalComments,
                     author: post.author,
                     isPremium: true,
                 };
@@ -117,20 +119,22 @@ const getPostFromDB = (postId, user) => __awaiter(void 0, void 0, void 0, functi
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Post not found!');
     }
     if (!isPremiumUser && (post === null || post === void 0 ? void 0 : post.isPremium)) {
-        // throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!');
-        // return {
-        //     statusCode: httpStatus.OK,
-        //     message: 'Posts retrieved successfully',
-        //     data: {
-        //         _id: post._id,
-        //         title: post.title,
-        //         summary: post.summary,
-        //         upvotes: post.upvotes,
-        //         downvotes: post.downvotes,
-        //         author: post.author,
-        //         isPremium: true,
-        //     },
-        // };
+        return {
+            statusCode: http_status_1.default.OK,
+            message: 'Posts retrieved successfully',
+            data: {
+                _id: post._id,
+                title: post.title,
+                summary: post.summary,
+                featuredImage: post.featuredImage,
+                upvotes: post.upvotes,
+                downvotes: post.downvotes,
+                totalVotes: post.totalVotes,
+                totalComments: post.totalComments,
+                author: post.author,
+                isPremium: true,
+            },
+        };
     }
     return {
         statusCode: http_status_1.default.OK,
