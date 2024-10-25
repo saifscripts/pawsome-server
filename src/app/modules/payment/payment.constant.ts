@@ -40,7 +40,7 @@ export const successPage = `
                 --card-foreground: 346 5% 15%;
                 --popover: 346 100% 100%;
                 --popover-foreground: 346 100% 10%;
-                --primary: 346 79.4% 38%;
+                --primary: 212.02 100% 46.67%;
                 --primary-foreground: 0 0% 100%;
                 --secondary: 346 30% 90%;
                 --secondary-foreground: 0 0% 0%;
@@ -64,7 +64,7 @@ export const successPage = `
                 --card-foreground: 346 5% 100%;
                 --popover: 346 50% 5%;
                 --popover-foreground: 346 5% 100%;
-                --primary: 346 79.4% 38%;
+                --primary: 212.02 100% 46.67%;
                 --primary-foreground: 0 0% 100%;
                 --secondary: 346 30% 20%;
                 --secondary-foreground: 0 0% 100%;
@@ -124,7 +124,7 @@ export const successPage = `
                 color: hsl(var(--primary-foreground));
                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
                 border: none;
-                border-radius: 4px;
+                border-radius: 8px;
                 padding: 12px 24px;
                 font-size: 16px;
                 text-decoration: none;
@@ -143,7 +143,7 @@ export const successPage = `
             <h1 class="title">Payment Successful!</h1>
             <p class="description">
                 Your payment has been processed successfully. Thank you for
-                rental.
+                subscribing.
             </p>
             <a href="{{primary-link}}" class="primary-button"
                 >{{primary-text}}</a
@@ -175,7 +175,7 @@ export const failPage = `
                 --card-foreground: 346 5% 15%;
                 --popover: 346 100% 100%;
                 --popover-foreground: 346 100% 10%;
-                --primary: 346 79.4% 38%;
+                --primary: 212.02 100% 46.67%;
                 --primary-foreground: 0 0% 100%;
                 --secondary: 346 30% 90%;
                 --secondary-foreground: 0 0% 0%;
@@ -199,7 +199,7 @@ export const failPage = `
                 --card-foreground: 346 5% 100%;
                 --popover: 346 50% 5%;
                 --popover-foreground: 346 5% 100%;
-                --primary: 346 79.4% 38%;
+                --primary: 212.02 100% 46.67%;
                 --primary-foreground: 0 0% 100%;
                 --secondary: 346 30% 20%;
                 --secondary-foreground: 0 0% 100%;
@@ -266,7 +266,7 @@ export const failPage = `
                 color: hsl(var(--primary-foreground));
                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
                 border: none;
-                border-radius: 4px;
+                border-radius: 8px;
                 padding: 12px 24px;
                 font-size: 16px;
                 text-decoration: none;
@@ -284,7 +284,7 @@ export const failPage = `
                 color: hsl(var(--foreground));
                 box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
                 border: 1px solid hsl(var(--border));
-                border-radius: 4px;
+                border-radius: 8px;
                 padding: 12px 24px;
                 font-size: 16px;
                 text-decoration: none;
