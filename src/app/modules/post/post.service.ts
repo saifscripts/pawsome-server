@@ -68,13 +68,16 @@ const createPostIntoDB = async (
 };
 
 const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
-    const isPremiumUser =
-        user?.userType === USER_TYPE.PREMIUM &&
-        user?.subscription?.endDate > new Date();
+    const { feed, ...params } = query;
+
+    const matchQuery: mongoose.FilterQuery<IPost> = { isPublished: true };
+    if (feed === 'following') {
+        matchQuery.author = { $in: user.following };
+    }
 
     const postQuery = new QueryBuilder(
-        Post.find({ isPublished: true }).populate('author'),
-        query,
+        Post.find(matchQuery).populate('author'),
+        params,
     )
         .search(PostSearchableFields)
         .filter()
@@ -83,6 +86,10 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
         .fields();
 
     let posts: Partial<IPost>[] = await postQuery.modelQuery;
+
+    const isPremiumUser =
+        user?.userType === USER_TYPE.PREMIUM &&
+        user?.subscription?.endDate > new Date();
 
     if (!isPremiumUser) {
         posts = posts.map((post) => {
