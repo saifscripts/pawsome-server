@@ -9,13 +9,16 @@ import { IContactUsOptions, IUser } from './user.interface';
 import { User } from './user.model';
 
 const getUserFromDB = async (id: string) => {
-    const user = await User.findById(id).populate({
-        path: 'posts',
-        populate: {
-            path: 'comments',
-            populate: { path: 'author', select: 'name email avatarURL' },
-        },
-    });
+    const user = await User.findById(id)
+        .populate({
+            path: 'posts',
+            populate: {
+                path: 'comments',
+                populate: { path: 'author', select: 'name email avatarURL' },
+            },
+        })
+        .populate('followers')
+        .populate('following');
 
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
