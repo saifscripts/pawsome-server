@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -59,15 +70,20 @@ const createPostIntoDB = (authorId, payload, featuredImage) => __awaiter(void 0,
 });
 const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
-        ((_a = user === null || user === void 0 ? void 0 : user.subscription) === null || _a === void 0 ? void 0 : _a.endDate) > new Date();
-    const postQuery = new QueryBuilder_1.default(post_model_1.Post.find({ isPublished: true }).populate('author'), query)
+    const { feed } = query, params = __rest(query, ["feed"]);
+    const matchQuery = { isPublished: true };
+    if (feed === 'following') {
+        matchQuery.author = { $in: user.following };
+    }
+    const postQuery = new QueryBuilder_1.default(post_model_1.Post.find(matchQuery).populate('author'), params)
         .search(post_constant_1.PostSearchableFields)
         .filter()
         .sort()
         .paginate()
         .fields();
     let posts = yield postQuery.modelQuery;
+    const isPremiumUser = (user === null || user === void 0 ? void 0 : user.userType) === user_constant_1.USER_TYPE.PREMIUM &&
+        ((_a = user === null || user === void 0 ? void 0 : user.subscription) === null || _a === void 0 ? void 0 : _a.endDate) > new Date();
     if (!isPremiumUser) {
         posts = posts.map((post) => {
             if (post.isPremium) {

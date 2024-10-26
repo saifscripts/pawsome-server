@@ -34,8 +34,8 @@ redirectPath) => __awaiter(void 0, void 0, void 0, function* () {
     const paymentResponse = yield (0, payment_utils_1.initiatePayment)({
         txnId,
         amount: payment_constant_1.SUBSCRIPTION_FEE[subscriptionType],
-        successURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
-        failURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectURL=${redirectPath || ''}`,
+        successURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectPath=${redirectPath || ''}`,
+        failURL: `${config_1.default.base_url}/api/v1/payments/confirm-subscription?TXNID=${txnId}&redirectPath=${redirectPath || ''}`,
         cancelURL: `${config_1.default.client_base_url}${redirectPath || ''}`,
         customerName: user === null || user === void 0 ? void 0 : user.name,
         customerEmail: user === null || user === void 0 ? void 0 : user.email,
