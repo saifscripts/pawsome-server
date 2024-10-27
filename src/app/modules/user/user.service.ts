@@ -191,7 +191,16 @@ const unfollowUserFromDB = async (
 };
 
 const getMeFromDB = async (id: mongoose.Types.ObjectId) => {
-    const user = await User.findById(id);
+    const user = await User.findById(id)
+        .populate({
+            path: 'posts',
+            populate: {
+                path: 'comments',
+                populate: { path: 'author', select: 'name email avatarURL' },
+            },
+        })
+        .populate('followers')
+        .populate('following');
 
     return {
         statusCode: httpStatus.OK,
