@@ -22,13 +22,16 @@ const payment_utils_1 = require("../payment/payment.utils");
 const user_constant_1 = require("./user.constant");
 const user_model_1 = require("./user.model");
 const getUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(id).populate({
+    const user = yield user_model_1.User.findById(id)
+        .populate({
         path: 'posts',
         populate: {
             path: 'comments',
             populate: { path: 'author', select: 'name email avatarURL' },
         },
-    });
+    })
+        .populate('followers')
+        .populate('following');
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
     }
@@ -117,7 +120,16 @@ const unfollowUserFromDB = (userId, followingId) => __awaiter(void 0, void 0, vo
     }
 });
 const getMeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(id);
+    const user = yield user_model_1.User.findById(id)
+        .populate({
+        path: 'posts',
+        populate: {
+            path: 'comments',
+            populate: { path: 'author', select: 'name email avatarURL' },
+        },
+    })
+        .populate('followers')
+        .populate('following');
     return {
         statusCode: http_status_1.default.OK,
         message: 'User profile retrieved successfully',
