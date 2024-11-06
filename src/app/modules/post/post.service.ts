@@ -118,6 +118,15 @@ const getPostsFromDB = async (user: IUser, query: Record<string, unknown>) => {
     };
 };
 
+const getMyPostsFromDB = async (authorId: mongoose.Types.ObjectId) => {
+    const posts = await Post.find({ author: authorId });
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Posts retrieved successfully',
+        data: posts,
+    };
+};
+
 const getTagsFromDB = async (query: Record<string, unknown>) => {
     const limit = parseInt(query.limit as string) || 10;
 
@@ -371,6 +380,7 @@ const downvotePostFromDB = async (
 export const PostServices = {
     createPostIntoDB,
     getPostsFromDB,
+    getMyPostsFromDB,
     getTagsFromDB,
     getPostFromDB,
     updatePostIntoDB,

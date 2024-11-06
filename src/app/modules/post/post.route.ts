@@ -19,6 +19,10 @@ router
         PostControllers.createPost,
     );
 
+router
+    .route('/my-posts')
+    .get(auth(USER_ROLE.ADMIN, USER_ROLE.USER), PostControllers.getMyPosts);
+
 router.route('/tags').get(PostControllers.getTags);
 
 router
