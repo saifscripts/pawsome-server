@@ -15,11 +15,13 @@ const getPostsFromDB = async (query: Record<string, unknown>) => {
         .fields();
 
     const posts = await postQuery.modelQuery;
+    const meta = await postQuery.countTotal();
 
     return {
         statusCode: httpStatus.OK,
         message: 'Posts retrieved successfully',
         data: posts,
+        meta,
     };
 };
 
