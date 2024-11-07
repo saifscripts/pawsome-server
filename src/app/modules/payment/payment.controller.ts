@@ -21,7 +21,18 @@ const confirmSubscription = catchAsync(async (req, res) => {
     res.send(result);
 });
 
+// Route: /api/v1/payment/my-subscriptions (GET)
+const getMySubscriptions = catchAsync(async (req, res) => {
+    const result = await PaymentServices.getMySubscriptions(
+        req.user._id,
+        req.query,
+    );
+
+    sendResponse(res, result);
+});
+
 export const PaymentControllers = {
     initiatePayment,
     confirmSubscription,
+    getMySubscriptions,
 };
