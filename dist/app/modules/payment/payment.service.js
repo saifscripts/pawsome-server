@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const QueryBuilder_1 = __importDefault(require("../../builders/QueryBuilder"));
 const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_constant_1 = require("../user/user.constant");
@@ -67,12 +68,12 @@ const confirmSubscription = (txnId, redirectPath) => __awaiter(void 0, void 0, v
                 throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Something went wrong!');
             }
             const currentDate = new Date();
-            let endDate;
+            const endDate = new Date();
             if (payment.subscriptionType === payment_constant_1.SUBSCRIPTION_TYPE.MONTHLY) {
-                endDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
+                endDate.setMonth(endDate.getMonth() + 1);
             }
             else if (payment.subscriptionType === payment_constant_1.SUBSCRIPTION_TYPE.YEARLY) {
-                endDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1));
+                endDate.setFullYear(endDate.getFullYear() + 1);
             }
             const updatedUser = yield user_model_1.User.findOneAndUpdate({ _id: payment.user }, {
                 userType: user_constant_1.USER_TYPE.PREMIUM,
@@ -109,7 +110,24 @@ const confirmSubscription = (txnId, redirectPath) => __awaiter(void 0, void 0, v
     }
     return 'Something went wrong!';
 });
+const getMySubscriptions = (userId, query) => __awaiter(void 0, void 0, void 0, function* () {
+    const paymentQuery = new QueryBuilder_1.default(payment_model_1.Payment.find({ user: userId, status: payment_constant_1.PAYMENT_STATUS.SUCCESS }), query)
+        // .search(PaymentSearchableFields)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+    const payments = yield paymentQuery.modelQuery;
+    const meta = yield paymentQuery.countTotal();
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Subscriptions retrieved successfully',
+        data: payments,
+        meta,
+    };
+});
 exports.PaymentServices = {
     initiatePaymentService,
     confirmSubscription,
+    getMySubscriptions,
 };

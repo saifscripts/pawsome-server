@@ -28,10 +28,12 @@ const getPostsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* ()
         .paginate()
         .fields();
     const posts = yield postQuery.modelQuery;
+    const meta = yield postQuery.countTotal();
     return {
         statusCode: http_status_1.default.OK,
         message: 'Posts retrieved successfully',
         data: posts,
+        meta,
     };
 });
 const getUsersFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
@@ -187,7 +189,7 @@ const unpublishPostIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* 
     };
 });
 const getPaymentsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const paymentQuery = new QueryBuilder_1.default(payment_model_1.Payment.find(), query)
+    const paymentQuery = new QueryBuilder_1.default(payment_model_1.Payment.find().populate('user'), query)
         // .search(PaymentSearchableFields)
         .filter()
         .sort()

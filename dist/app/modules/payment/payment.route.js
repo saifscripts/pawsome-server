@@ -17,4 +17,7 @@ router
 router
     .route('/confirm-subscription')
     .post(payment_controller_1.PaymentControllers.confirmSubscription);
+router
+    .route('/my-subscriptions')
+    .get((0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.USER), payment_controller_1.PaymentControllers.getMySubscriptions);
 exports.PaymentRoutes = router;

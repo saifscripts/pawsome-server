@@ -109,6 +109,14 @@ const getPostsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, functi
         data: posts,
     };
 });
+const getMyPostsFromDB = (authorId) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = yield post_model_1.Post.find({ author: authorId });
+    return {
+        statusCode: http_status_1.default.OK,
+        message: 'Posts retrieved successfully',
+        data: posts,
+    };
+});
 const getTagsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const limit = parseInt(query.limit) || 10;
     const tags = yield post_model_1.Post.aggregate([
@@ -290,6 +298,7 @@ const downvotePostFromDB = (postId, authorId) => __awaiter(void 0, void 0, void 
 exports.PostServices = {
     createPostIntoDB,
     getPostsFromDB,
+    getMyPostsFromDB,
     getTagsFromDB,
     getPostFromDB,
     updatePostIntoDB,

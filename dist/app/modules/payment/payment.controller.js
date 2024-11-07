@@ -26,7 +26,13 @@ const confirmSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(vo
     const result = yield payment_service_1.PaymentServices.confirmSubscription(req.query.TXNID, req.query.redirectPath);
     res.send(result);
 }));
+// Route: /api/v1/payment/my-subscriptions (GET)
+const getMySubscriptions = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield payment_service_1.PaymentServices.getMySubscriptions(req.user._id, req.query);
+    (0, sendResponse_1.default)(res, result);
+}));
 exports.PaymentControllers = {
     initiatePayment,
     confirmSubscription,
+    getMySubscriptions,
 };
