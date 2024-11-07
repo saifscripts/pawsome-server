@@ -32,7 +32,6 @@ const getUserFromDB = async (id: string) => {
             role: undefined,
             status: undefined,
             userType: undefined,
-            createdAt: undefined,
             updatedAt: undefined,
         },
     };
