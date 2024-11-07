@@ -263,7 +263,10 @@ const unpublishPostIntoDB = async (id: string) => {
 };
 
 const getPaymentsFromDB = async (query: Record<string, unknown>) => {
-    const paymentQuery = new QueryBuilder(Payment.find(), query)
+    const paymentQuery = new QueryBuilder(
+        Payment.find().populate('user'),
+        query,
+    )
         // .search(PaymentSearchableFields)
         .filter()
         .sort()
