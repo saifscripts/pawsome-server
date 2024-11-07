@@ -38,7 +38,7 @@ const getUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return {
         statusCode: http_status_1.default.OK,
         message: 'User retrieved successfully',
-        data: Object.assign(Object.assign({}, user.toObject()), { role: undefined, status: undefined, userType: undefined, createdAt: undefined, updatedAt: undefined }),
+        data: Object.assign(Object.assign({}, user.toObject()), { role: undefined, status: undefined, userType: undefined, updatedAt: undefined }),
     };
 });
 const followUserIntoDB = (userId, followingId) => __awaiter(void 0, void 0, void 0, function* () {
