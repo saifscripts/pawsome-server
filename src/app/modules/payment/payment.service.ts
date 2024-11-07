@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
+import QueryBuilder from '../../builders/QueryBuilder';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { USER_TYPE } from '../user/user.constant';
@@ -93,16 +94,12 @@ const confirmSubscription = async (txnId: string, redirectPath?: string) => {
             }
 
             const currentDate = new Date();
-            let endDate;
+            const endDate = new Date();
 
             if (payment.subscriptionType === SUBSCRIPTION_TYPE.MONTHLY) {
-                endDate = new Date(
-                    currentDate.setMonth(currentDate.getMonth() + 1),
-                );
+                endDate.setMonth(endDate.getMonth() + 1);
             } else if (payment.subscriptionType === SUBSCRIPTION_TYPE.YEARLY) {
-                endDate = new Date(
-                    currentDate.setFullYear(currentDate.getFullYear() + 1),
-                );
+                endDate.setFullYear(endDate.getFullYear() + 1);
             }
 
             const updatedUser = await User.findOneAndUpdate(
@@ -156,7 +153,33 @@ const confirmSubscription = async (txnId: string, redirectPath?: string) => {
     return 'Something went wrong!';
 };
 
+const getMySubscriptions = async (
+    userId: mongoose.Types.ObjectId,
+    query: Record<string, unknown>,
+) => {
+    const paymentQuery = new QueryBuilder(
+        Payment.find({ user: userId, status: PAYMENT_STATUS.SUCCESS }),
+        query,
+    )
+        // .search(PaymentSearchableFields)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+    const payments = await paymentQuery.modelQuery;
+    const meta = await paymentQuery.countTotal();
+
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Subscriptions retrieved successfully',
+        data: payments,
+        meta,
+    };
+};
+
 export const PaymentServices = {
     initiatePaymentService,
     confirmSubscription,
+    getMySubscriptions,
 };

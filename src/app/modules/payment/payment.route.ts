@@ -18,4 +18,11 @@ router
     .route('/confirm-subscription')
     .post(PaymentControllers.confirmSubscription);
 
+router
+    .route('/my-subscriptions')
+    .get(
+        auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+        PaymentControllers.getMySubscriptions,
+    );
+
 export const PaymentRoutes = router;
