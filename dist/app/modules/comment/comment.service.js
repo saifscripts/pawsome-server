@@ -118,7 +118,9 @@ const deleteCommentFromDB = (commentId, authorId) => __awaiter(void 0, void 0, v
     }
 });
 const getCommentsByPostIdFromDB = (postId) => __awaiter(void 0, void 0, void 0, function* () {
-    const comments = yield comment_model_1.Comment.find({ postId }).sort('-createdAt');
+    const comments = yield comment_model_1.Comment.find({ postId })
+        .populate('author')
+        .sort('createdAt');
     return {
         statusCode: http_status_1.default.OK,
         message: 'Comments fetched successfully!',
