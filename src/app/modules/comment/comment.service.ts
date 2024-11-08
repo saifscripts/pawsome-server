@@ -171,7 +171,9 @@ const deleteCommentFromDB = async (
 };
 
 const getCommentsByPostIdFromDB = async (postId: string) => {
-    const comments = await Comment.find({ postId }).sort('-createdAt');
+    const comments = await Comment.find({ postId })
+        .populate('author')
+        .sort('createdAt');
 
     return {
         statusCode: httpStatus.OK,
